@@ -1096,7 +1096,7 @@ h1:focus {
   outline: none;
 }
 
-/* Настройки текущего чаепития. */
+/* Current tea session settings. */
 .timer-parameters {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -1137,7 +1137,7 @@ h1:focus {
 .brew-sidebar {
   display: block;
 }
-/* Общая карточка: крупный циферблат и отдельная колонка управления. */
+/* Shared card: a large timer display and a separate controls column. */
 .timer-stage,
 .brew-panel {
   display: contents;

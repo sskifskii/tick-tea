@@ -237,7 +237,7 @@ function AppContent() {
                       await install.prompt();
                       await install.userChoice;
                     } catch {
-                      // При отказе браузера остаётся инструкция ручной установки.
+                      // Keep manual installation instructions available if the browser rejects installation.
                     } finally {
                       setInstall(null);
                     }

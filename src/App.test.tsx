@@ -38,8 +38,8 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 const openTimer = () => render(<App />);
-describe("пользовательский интерфейс", () => {
-  it("подстраивает окно ввода под видимую область при открытии клавиатуры и прокрутке", () => {
+describe("user interface", () => {
+  it("adjusts the input dialog to the visible viewport when the keyboard opens and the page scrolls", () => {
     const viewport = Object.assign(new EventTarget(), {
       height: 800,
       offsetTop: 0,
@@ -63,7 +63,7 @@ describe("пользовательский интерфейс", () => {
     expect(removeListener).toHaveBeenCalledWith("scroll", expect.any(Function));
   });
   it.each([/Стартовое время/, /Прибавлять к проливу/, /Изменить время/])(
-    "ставит фокус в поле после открытия через %s и возвращает его при закрытии",
+    "focuses the input when opened via %s and restores focus on close",
     (name) => {
       openTimer();
       const trigger = screen.getByRole("button", { name });
@@ -79,7 +79,7 @@ describe("пользовательский интерфейс", () => {
       expect(document.activeElement).toBe(trigger);
     },
   );
-  it("сразу открывает таймер без каталога и позволяет настроить шаг", () => {
+  it("opens the timer immediately without a catalog and allows increment adjustment", () => {
     openTimer();
     expect(screen.getByRole("timer")).toBeDefined();
     expect(screen.queryByText("Чайная коллекция")).toBeNull();
@@ -95,7 +95,7 @@ describe("пользовательский интерфейс", () => {
     ).toContain("+0");
     expect(localStorage.length).toBe(0);
   });
-  it("восстанавливает параметры и историю после обновления и очищает их для новой вкладки", () => {
+  it("restores settings and history after reload and clears them for a new tab", () => {
     vi.useFakeTimers();
     const first = openTimer();
     fireEvent.click(screen.getByRole("button", { name: "Начать пролив" }));
@@ -115,7 +115,7 @@ describe("пользовательский интерфейс", () => {
       "00:30",
     );
   });
-  it("меняет точное время, завершает пролив и показывает следующие 35 секунд", async () => {
+  it("edits the exact duration, completes the infusion and shows 35 seconds for the next infusion", async () => {
     openTimer();
     fireEvent.click(screen.getByRole("button", { name: /Изменить время/ }));
     const dialog = screen.getByRole("dialog");
@@ -142,7 +142,7 @@ describe("пользовательский интерфейс", () => {
     expect(screen.getByRole("button", { name: "Начать пролив" })).toBeDefined();
     expect(screen.getByText("Пролив 01")).toBeDefined();
   });
-  it("подтверждает перезапуск и защищает завершение от случайного нажатия", async () => {
+  it("confirms restart and protects against accidentally ending the session", async () => {
     openTimer();
     fireEvent.click(screen.getByRole("button", { name: "Начать пролив" }));
     fireEvent.click(screen.getByRole("button", { name: "Пауза" }));

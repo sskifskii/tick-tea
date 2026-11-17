@@ -17,8 +17,8 @@ afterEach(() => {
   vi.useRealTimers();
 });
 
-describe("управление живой сессией", () => {
-  it("проходит сценарий A и посылает один сигнал завершения", () => {
+describe("live session management", () => {
+  it("runs scenario A and sends one completion signal", () => {
     const { result } = renderHook(useTeaSession);
     act(() => {
       result.current.dispatch({ type: "set-duration", seconds: 40 });
@@ -40,7 +40,7 @@ describe("управление живой сессией", () => {
       infusion: 2,
     });
   });
-  it("сценарий B: ручные 30 секунд дают следующие 45", () => {
+  it("scenario B: a manual 30-second duration makes the next infusion 45 seconds", () => {
     const { result } = renderHook(useTeaSession);
     act(() => {
       result.current.dispatch({ type: "set-duration", seconds: 40 });
@@ -62,7 +62,7 @@ describe("управление живой сессией", () => {
       ],
     });
   });
-  it("сценарий C: размонтирование и открытие истёкшей сессии на 70 секунд", () => {
+  it("scenario C: unmounts and reopens an expired 70-second session", () => {
     const first = renderHook(useTeaSession);
     act(() =>
       first.result.current.dispatch({ type: "set-duration", seconds: 70 }),
@@ -81,7 +81,7 @@ describe("управление живой сессией", () => {
     expect(restored.result.current.session?.history).toHaveLength(1);
     expect(completionFeedback).not.toHaveBeenCalled();
   });
-  it("быстрые действия читают актуальное состояние до React-перерисовки", () => {
+  it("reads the latest state for rapid actions before React rerenders", () => {
     const { result } = renderHook(useTeaSession);
     act(() => {
       result.current.dispatch({ type: "set-duration", seconds: 40 });
@@ -96,7 +96,7 @@ describe("управление живой сессией", () => {
     });
     expect(result.current.session?.infusion).toBe(2);
   });
-  it("завершение сбрасывает таймер и историю нового чаепития", () => {
+  it("ending a session resets the timer and history for a new tea session", () => {
     const { result } = renderHook(useTeaSession);
     act(() => {
       result.current.dispatch({ type: "set-duration", seconds: 40 });
@@ -115,7 +115,7 @@ describe("управление живой сессией", () => {
       history: [],
     });
   });
-  it("visibilitychange догоняет время без ожидания очередного тика", () => {
+  it("catches up on visibilitychange without waiting for the next tick", () => {
     const { result } = renderHook(useTeaSession);
     act(() => {
       result.current.dispatch({ type: "set-duration", seconds: 40 });

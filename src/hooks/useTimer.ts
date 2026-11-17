@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import type { Session } from "../lib/session";
 import { remainingAt } from "../lib/session";
 
-// Только компонент часов обновляется во время отсчёта; остальной UI стабильны.
+// Only the clock component updates during the countdown; the rest of the UI remains stable.
 export function useTimer(session: Session) {
   const [now, setNow] = useState(Date.now);
   useEffect(() => {
@@ -16,7 +16,7 @@ export function useTimer(session: Session) {
       document.removeEventListener("visibilitychange", update);
     };
   }, [session.status, session.endsAt]);
-  // До первого тика после продолжения не показываем время из момента паузы.
+  // Avoid showing the time from the pause until the first tick after resuming.
   const displayNow =
     session.status === "running"
       ? Math.max(now, (session.endsAt ?? now) - session.remainingMs)
