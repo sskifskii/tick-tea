@@ -63,7 +63,7 @@ export default function App() {
               <span className="brand-dot">.</span>
             </span>
           </div>
-          <span className="header-caption">ВРЕМЯ БЫТЬ ЗДЕСЬ</span>
+          <span className="header-caption">ВРЕМЯ ЧАЯ</span>
           <div className="header-actions">
             {!online && (
               <span className="offline-label">
