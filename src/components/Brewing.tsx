@@ -275,6 +275,7 @@ export function Brewing({
                 step="1"
                 inputMode="numeric"
                 value={precise}
+                onFocus={(event) => event.currentTarget.select()}
                 onChange={(event) => setPrecise(event.target.value)}
               />
               <span>секунд</span>
