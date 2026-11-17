@@ -27,6 +27,7 @@ export function Brewing({
   onEnd: () => void;
 }) {
   const heading = useRef<HTMLHeadingElement>(null);
+  const durationInput = useRef<HTMLInputElement>(null);
   useEffect(() => {
     heading.current?.focus({ preventScroll: true });
   }, []);
@@ -221,6 +222,7 @@ export function Brewing({
       </div>
       {(dialog === "time" || dialog === "increment") && (
         <Modal
+          initialFocusRef={durationInput}
           title={
             dialog === "increment"
               ? "Шаг между проливами"
@@ -255,6 +257,7 @@ export function Brewing({
             </label>
             <div className="duration-input">
               <input
+                ref={durationInput}
                 id="exact-duration"
                 type="number"
                 min={dialog === "increment" ? 0 : MIN_SECONDS}
@@ -263,7 +266,6 @@ export function Brewing({
                 inputMode="numeric"
                 value={precise}
                 onChange={(event) => setPrecise(event.target.value)}
-                autoFocus
               />
               <span>секунд</span>
             </div>
