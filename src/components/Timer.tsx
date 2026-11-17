@@ -1,3 +1,4 @@
+import { useLanguage } from "../hooks/useLanguage";
 import { Check, Pause } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import type { Session } from "../lib/session";
@@ -5,6 +6,7 @@ import { formatTime } from "../lib/session";
 import { useTimer } from "../hooks/useTimer";
 
 export function Timer({ session }: { session: Session }) {
+  const { t } = useLanguage();
   const remaining = useTimer(session);
   const progress = 1 - remaining / (session.duration * 1000);
   const completed = session.status === "completed";
@@ -13,7 +15,10 @@ export function Timer({ session }: { session: Session }) {
     <div
       className={`timer timer--${session.status}`}
       role="timer"
-      aria-label={`Пролив ${session.infusion}, осталось ${formatTime(remaining)}`}
+      aria-label={t("Пролив {infusion}, осталось {time}", {
+        infusion: session.infusion,
+        time: formatTime(remaining),
+      })}
     >
       <svg
         className="timer-ring"
@@ -71,7 +76,7 @@ export function Timer({ session }: { session: Session }) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }}
           >
-            ПРОЛИВ {String(session.infusion).padStart(2, "0")}
+            {t("ПРОЛИВ")} {String(session.infusion).padStart(2, "0")}
           </motion.div>
         </AnimatePresence>
         <div className="timer-digits" aria-hidden="true">
@@ -80,15 +85,15 @@ export function Timer({ session }: { session: Session }) {
         <div className="timer-caption">
           {completed ? (
             <>
-              <Check size={15} /> Можно разливать
+              <Check size={15} /> {t("Можно разливать")}
             </>
           ) : session.status === "paused" ? (
             <>
-              <Pause size={13} /> Момент тишины
+              <Pause size={13} /> {t("Момент тишины")}
             </>
           ) : session.status === "running" ? (
             <>
-              <span className="breathing-dot" /> Чай раскрывается
+              <span className="breathing-dot" /> {t("Чай раскрывается")}
             </>
           ) : null}
         </div>

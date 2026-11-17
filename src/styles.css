@@ -23,7 +23,8 @@ body {
   min-width: 320px;
 }
 button,
-input {
+input,
+select {
   font: inherit;
 }
 button {
@@ -47,6 +48,24 @@ a:focus-visible,
 input:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 5px;
+}
+select:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 5px;
+}
+.language-label {
+  flex: 1;
+  font-size: 12px;
+}
+.language-select {
+  max-width: 60%;
+  min-height: 44px;
+  padding: 8px 12px;
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 12px;
 }
 button {
   touch-action: manipulation;

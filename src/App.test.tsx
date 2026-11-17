@@ -168,3 +168,186 @@ describe("пользовательский интерфейс", () => {
     expect(screen.queryByText("Пролив 01")).toBeNull();
   });
 });
+
+describe("interface languages", () => {
+  const switchLanguage = (language: "ru" | "en") => {
+    fireEvent.change(screen.getByRole("combobox"), {
+      target: { value: language },
+    });
+  };
+
+  it("localizes page and install metadata", () => {
+    const manifest = document.createElement("link");
+    manifest.rel = "manifest";
+    document.head.append(manifest);
+    const description = document.createElement("meta");
+    description.name = "description";
+    document.head.append(description);
+    try {
+      openTimer();
+      fireEvent.click(
+        screen.getByRole("button", { name: "Настройки приложения" }),
+      );
+      switchLanguage("en");
+      expect(manifest.getAttribute("href")).toBe("/manifest.en.webmanifest");
+      expect(description.content).toContain("A small pause");
+      switchLanguage("ru");
+      expect(manifest.getAttribute("href")).toBe("/manifest.webmanifest");
+      expect(description.content).toContain("Маленькая пауза");
+    } finally {
+      manifest.remove();
+      description.remove();
+    }
+  });
+
+  it("switches language when storage is blocked and translates install instructions", () => {
+    vi.mocked(window.matchMedia).mockReturnValue({
+      matches: false,
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+    } as unknown as MediaQueryList);
+    const read = vi
+      .spyOn(Storage.prototype, "getItem")
+      .mockImplementation(() => {
+        throw new Error("Storage blocked");
+      });
+    const write = vi
+      .spyOn(Storage.prototype, "setItem")
+      .mockImplementation(() => {
+        throw new Error("Storage blocked");
+      });
+    try {
+      openTimer();
+      fireEvent.click(
+        screen.getByRole("button", { name: "Настройки приложения" }),
+      );
+      switchLanguage("en");
+      expect(
+        screen.getByText(/On iPhone: Safari → Share → Add to Home Screen\./),
+      ).toBeDefined();
+      fireEvent.click(screen.getByRole("button", { name: "Close dialog" }));
+      fireEvent.click(screen.getByRole("button", { name: "Start infusion" }));
+      expect(
+        screen.getByText(
+          "Your browser cannot save this session. Keep this tab open while you enjoy your tea.",
+        ),
+      ).toBeDefined();
+    } finally {
+      read.mockRestore();
+      write.mockRestore();
+    }
+  });
+
+  it("switches both ways, translates dialogs and restores the saved choice", () => {
+    const first = openTimer();
+    fireEvent.click(
+      screen.getByRole("button", { name: "Настройки приложения" }),
+    );
+    switchLanguage("en");
+    expect(document.documentElement.lang).toBe("en");
+    expect(document.title).toBe("tick tea — time for tea");
+    expect(
+      screen.getByRole("dialog", { name: "Your quiet corner" }),
+    ).toBeDefined();
+    expect(
+      screen.getByRole("switch", { name: "Completion sound" }),
+    ).toBeDefined();
+    expect(screen.getByText("Unavailable in this browser")).toBeDefined();
+    fireEvent.click(screen.getByRole("button", { name: "Close dialog" }));
+    fireEvent.click(screen.getByRole("button", { name: "Edit time" }));
+    expect(
+      screen.getByRole("spinbutton", { name: "Duration in seconds" }),
+    ).toBeDefined();
+    expect(
+      screen.getByText(
+        "The next infusion will be 5 s longer than the selected duration.",
+      ),
+    ).toBeDefined();
+    fireEvent.click(screen.getByRole("button", { name: "Close dialog" }));
+    fireEvent.click(screen.getByRole("button", { name: /Add per infusion/ }));
+    expect(
+      screen.getByRole("spinbutton", { name: "Increment in seconds" }),
+    ).toBeDefined();
+    fireEvent.click(screen.getByRole("button", { name: "Close dialog" }));
+    first.unmount();
+    openTimer();
+    expect(
+      screen.getByRole("button", { name: "Start infusion" }),
+    ).toBeDefined();
+    fireEvent.click(screen.getByRole("button", { name: "App settings" }));
+    switchLanguage("ru");
+    expect(document.documentElement.lang).toBe("ru");
+    expect(document.title).toBe("tick tea — время для чая");
+    expect(
+      screen.getByRole("dialog", { name: "Ваш тихий уголок" }),
+    ).toBeDefined();
+  });
+
+  it("keeps a running countdown and history while changing language", () => {
+    vi.useFakeTimers();
+    openTimer();
+    fireEvent.click(screen.getByRole("button", { name: "Начать пролив" }));
+    act(() => vi.advanceTimersByTime(10000));
+    fireEvent.click(
+      screen.getByRole("button", { name: "Настройки приложения" }),
+    );
+    switchLanguage("en");
+    fireEvent.click(screen.getByRole("button", { name: "Close dialog" }));
+    expect(screen.getByRole("timer").getAttribute("aria-label")).toBe(
+      "Infusion 1, 00:20 remaining",
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Pause" }));
+    expect(screen.getByText("A quiet moment")).toBeDefined();
+    fireEvent.click(screen.getByRole("button", { name: "Resume" }));
+    act(() => vi.advanceTimersByTime(20000));
+    expect(screen.getByText("Infusion 01")).toBeDefined();
+    expect(
+      screen.getByText("Infusion 1 complete. Your tea is ready to pour."),
+    ).toBeDefined();
+    expect(
+      screen.getByText("Next: 35 s. Start when you are ready."),
+    ).toBeDefined();
+    fireEvent.click(screen.getByRole("button", { name: "Next infusion" }));
+    expect(screen.getByRole("timer").getAttribute("aria-label")).toBe(
+      "Infusion 2, 00:35 remaining",
+    );
+    fireEvent.click(screen.getByRole("button", { name: "End tea session" }));
+    expect(
+      screen.getByRole("dialog", { name: "End this tea session?" }),
+    ).toBeDefined();
+    fireEvent.click(screen.getByRole("button", { name: "Keep brewing" }));
+    expect(screen.getByText("Infusion 01")).toBeDefined();
+  });
+
+  it("defaults to Russian for an invalid preference and works without local storage", () => {
+    localStorage.setItem("tick-tea:language", "fr");
+    const read = vi.spyOn(Storage.prototype, "getItem");
+    const write = vi.spyOn(Storage.prototype, "setItem");
+    try {
+      const first = openTimer();
+      expect(
+        screen.getByRole("button", { name: "Начать пролив" }),
+      ).toBeDefined();
+      first.unmount();
+      read.mockImplementation(() => {
+        throw new Error("Storage blocked");
+      });
+      write.mockImplementation(() => {
+        throw new Error("Storage blocked");
+      });
+      openTimer();
+      fireEvent.click(
+        screen.getByRole("button", { name: "Настройки приложения" }),
+      );
+      switchLanguage("en");
+      expect(
+        screen.getByRole("button", { name: "Start infusion" }),
+      ).toBeDefined();
+    } finally {
+      read.mockRestore();
+      write.mockRestore();
+    }
+  });
+});
