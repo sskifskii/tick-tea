@@ -17,7 +17,7 @@ export default defineConfig({
       manifest: {
         name: "tick tea — время для чая",
         short_name: "tick tea",
-        description: "Спокойный ритуал заваривания китайского чая проливами.",
+        description: "Таймер для чая с настраиваемым шагом и историей проливов.",
         lang: "ru",
         theme_color: "#171816",
         background_color: "#171816",

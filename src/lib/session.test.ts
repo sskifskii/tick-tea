@@ -1,5 +1,4 @@
 import { describe, expect, it } from "vitest";
-import { teas } from "../data/teas";
 import {
   clampDuration,
   createSession,
@@ -10,15 +9,14 @@ import {
   remainingAt,
   transition,
 } from "./session";
-const tea = teas[0];
-const first = () => createSession(tea);
+const first = () => createSession(40, 15);
 const finished = (duration = 40) => {
   let s = transition(first(), { type: "set-duration", seconds: duration });
   s = transition(s, { type: "start", now: 1000 });
   return transition(s, { type: "tick", now: 1000 + duration * 1000 });
 };
 describe("длительность", () => {
-  it("первый пролив Да Хун Пао — 40 секунд", () => {
+  it("первый пролив использует заданные 40 секунд", () => {
     expect(first()).toMatchObject({
       infusion: 1,
       duration: 40,
@@ -32,7 +30,7 @@ describe("длительность", () => {
     expect(nextDuration(55, 15)).toBe(70);
   });
   it("использует вручную уменьшенное время: 40 → 30 → 45", () => {
-    let s = transition(finished(), { type: "next", increment: 15 });
+    let s = transition(finished(), { type: "next" });
     expect(s.duration).toBe(55);
     s = transition(s, { type: "set-duration", seconds: 30 });
     s = transition(s, { type: "start", now: 50000 });
@@ -41,19 +39,43 @@ describe("длительность", () => {
       { number: 1, duration: 40 },
       { number: 2, duration: 30 },
     ]);
-    s = transition(s, { type: "next", increment: 15 });
+    s = transition(s, { type: "next" });
     expect(s).toMatchObject({ duration: 45, infusion: 3, status: "idle" });
   });
   it("использует вручную увеличенное время", () => {
-    expect(
-      transition(finished(60), { type: "next", increment: 15 }).duration,
-    ).toBe(75);
+    expect(transition(finished(60), { type: "next" }).duration).toBe(75);
   });
   it("ограничивает ноль, отрицательные, дробные, бесконечные и большие значения", () => {
     expect([-5, 0, NaN, Infinity].map(clampDuration)).toEqual([1, 1, 1, 1]);
     expect(clampDuration(5.7)).toBe(6);
     expect(clampDuration(9999)).toBe(MAX_SECONDS);
     expect(nextDuration(MAX_SECONDS, 15)).toBe(MAX_SECONDS);
+  });
+  it("нулевой шаг сохраняет время, смена шага применяется к следующему проливу", () => {
+    let s = transition(finished(), { type: "set-increment", seconds: 0 });
+    expect(transition(s, { type: "next" }).duration).toBe(40);
+    s = transition(s, { type: "set-increment", seconds: 12 });
+    expect(transition(s, { type: "next" })).toMatchObject({
+      duration: 52,
+      increment: 12,
+    });
+    expect(s.history).toEqual([{ number: 1, duration: 40 }]);
+  });
+  it("правка на паузе сбрасывает текущий отсчёт и сохраняет предыдущую историю", () => {
+    let s = transition(finished(), { type: "next" });
+    s = transition(s, { type: "start", now: 50000 });
+    s = transition(s, { type: "pause", now: 60000 });
+    s = transition(s, { type: "set-duration", seconds: 20 });
+    expect(s).toMatchObject({
+      status: "idle",
+      duration: 20,
+      remainingMs: 20000,
+      infusion: 2,
+      history: [{ number: 1, duration: 40 }],
+    });
+    s = transition(s, { type: "start", now: 70000 });
+    s = transition(s, { type: "tick", now: 90000 });
+    expect(transition(s, { type: "next" }).duration).toBe(35);
   });
   it("не позволяет редактировать работающий таймер", () => {
     const s = transition(first(), { type: "start", now: 0 });
@@ -107,7 +129,7 @@ describe("переходы таймера", () => {
   it("не повышает номер при завершении; следующий пролив не стартует автоматически", () => {
     const s = finished();
     expect(s.infusion).toBe(1);
-    expect(transition(s, { type: "next", increment: 15 })).toMatchObject({
+    expect(transition(s, { type: "next" })).toMatchObject({
       infusion: 2,
       status: "idle",
       remainingMs: 55000,
@@ -117,8 +139,8 @@ describe("переходы таймера", () => {
   it("повторные быстрые нажатия не стартуют и не переходят дважды", () => {
     const running = transition(first(), { type: "start", now: 0 });
     expect(transition(running, { type: "start", now: 1000 })).toBe(running);
-    const next = transition(finished(), { type: "next", increment: 15 });
-    expect(transition(next, { type: "next", increment: 15 })).toBe(next);
+    const next = transition(finished(), { type: "next" });
+    expect(transition(next, { type: "next" })).toBe(next);
     const complete = finished();
     expect(transition(complete, { type: "tick", now: 999999 })).toBe(complete);
   });
@@ -146,13 +168,13 @@ describe("переходы таймера", () => {
   });
   it("невозможные переходы не меняют состояние", () => {
     const s = first();
-    expect(transition(s, { type: "next", increment: 15 })).toBe(s);
+    expect(transition(s, { type: "next" })).toBe(s);
     expect(transition(s, { type: "pause", now: 1000 })).toBe(s);
   });
   it("новая сессия не наследует старую историю", () => {
-    const s = createSession(teas[2]);
+    const s = createSession(15, 10);
     expect(s).toMatchObject({
-      teaId: "shu-puer",
+      increment: 10,
       infusion: 1,
       duration: 15,
       status: "idle",

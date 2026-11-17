@@ -12,6 +12,7 @@ import App from "./App";
 
 beforeEach(() => {
   localStorage.clear();
+  sessionStorage.clear();
   vi.stubGlobal(
     "matchMedia",
     vi.fn().mockReturnValue({
@@ -35,36 +36,46 @@ afterEach(() => {
   vi.useRealTimers();
   vi.unstubAllGlobals();
 });
-const openTea = async () => {
-  render(<App />);
-  fireEvent.click(screen.getByRole("button", { name: "Заварить Да Хун Пао" }));
-  await screen.findByRole("heading", { name: /Да Хун Пао/, level: 1 });
-};
+const openTimer = () => render(<App />);
 describe("пользовательский интерфейс", () => {
-  it("фильтрует каталог и восстанавливает его после пустого поиска", () => {
-    render(<App />);
-    expect(screen.getAllByRole("button", { name: /^Заварить/ })).toHaveLength(
-      8,
-    );
-    fireEvent.click(screen.getByRole("button", { name: "Пуэр" }));
-    expect(screen.getAllByRole("button", { name: /^Заварить/ })).toHaveLength(
-      2,
-    );
-    fireEvent.change(screen.getByRole("textbox", { name: "Найти чай" }), {
-      target: { value: "несуществующий" },
-    });
-    expect(screen.queryAllByRole("button", { name: /^Заварить/ })).toHaveLength(
-      0,
-    );
+  it("сразу открывает таймер без каталога и позволяет настроить шаг", () => {
+    openTimer();
+    expect(screen.getByRole("timer")).toBeDefined();
+    expect(screen.queryByText("Чайная коллекция")).toBeNull();
     fireEvent.click(
-      screen.getByRole("button", { name: /Показать всю коллекцию/ }),
+      screen.getByRole("button", { name: /Прибавлять к проливу/ }),
     );
-    expect(screen.getAllByRole("button", { name: /^Заварить/ })).toHaveLength(
-      8,
+    const dialog = screen.getByRole("dialog");
+    const input = within(dialog).getByRole("spinbutton");
+    fireEvent.change(input, { target: { value: "0" } });
+    fireEvent.submit(input.closest("form")!);
+    expect(
+      screen.getByRole("button", { name: /Прибавлять к проливу/ }).textContent,
+    ).toContain("+0");
+    expect(localStorage.length).toBe(0);
+  });
+  it("восстанавливает параметры и историю после обновления и очищает их для новой вкладки", () => {
+    vi.useFakeTimers();
+    const first = openTimer();
+    fireEvent.click(screen.getByRole("button", { name: "Начать пролив" }));
+    act(() => vi.advanceTimersByTime(30000));
+    fireEvent.click(screen.getByRole("button", { name: "Следующий пролив" }));
+    first.unmount();
+    const restored = openTimer();
+    expect(screen.getByText("Пролив 01")).toBeDefined();
+    expect(screen.getByRole("timer").getAttribute("aria-label")).toContain(
+      "00:35",
+    );
+    restored.unmount();
+    sessionStorage.clear();
+    openTimer();
+    expect(screen.queryByText("Пролив 01")).toBeNull();
+    expect(screen.getByRole("timer").getAttribute("aria-label")).toContain(
+      "00:30",
     );
   });
-  it("меняет точное время, завершает пролив и показывает следующие 45 секунд", async () => {
-    await openTea();
+  it("меняет точное время, завершает пролив и показывает следующие 35 секунд", async () => {
+    openTimer();
     fireEvent.click(screen.getByRole("button", { name: /Изменить время/ }));
     const dialog = screen.getByRole("dialog");
     const input = within(dialog).getByRole("spinbutton");
@@ -85,13 +96,13 @@ describe("пользовательский интерфейс", () => {
     act(() => vi.advanceTimersByTime(30000));
     fireEvent.click(screen.getByRole("button", { name: "Следующий пролив" }));
     expect(screen.getByRole("timer").getAttribute("aria-label")).toContain(
-      "00:45",
+      "00:35",
     );
     expect(screen.getByRole("button", { name: "Начать пролив" })).toBeDefined();
     expect(screen.getByText("Пролив 01")).toBeDefined();
   });
   it("подтверждает перезапуск и защищает завершение от случайного нажатия", async () => {
-    await openTea();
+    openTimer();
     fireEvent.click(screen.getByRole("button", { name: "Начать пролив" }));
     fireEvent.click(screen.getByRole("button", { name: "Пауза" }));
     expect(screen.getByRole("button", { name: "Продолжить" })).toBeDefined();
@@ -107,9 +118,12 @@ describe("пользовательский интерфейс", () => {
     expect(screen.getByRole("button", { name: "Начать пролив" })).toBeDefined();
     fireEvent.click(screen.getByRole("button", { name: "Завершить чаепитие" }));
     fireEvent.click(
-      screen.getByRole("button", { name: /Завершить и вернуться/ }),
+      screen.getByRole("button", { name: /Начать новое чаепитие/ }),
     );
-    await screen.findByRole("heading", { name: /Чайная коллекция/ });
-    expect(screen.queryByRole("timer")).toBeNull();
+    expect(screen.getByRole("timer").getAttribute("aria-label")).toContain(
+      "00:30",
+    );
+    expect(screen.queryByRole("dialog")).toBeNull();
+    expect(screen.queryByText("Пролив 01")).toBeNull();
   });
 });

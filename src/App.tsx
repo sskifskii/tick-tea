@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
-import { AnimatePresence, MotionConfig } from "motion/react";
+import { MotionConfig } from "motion/react";
 import {
-  ArrowRight,
   Download,
   Leaf,
   Settings2,
@@ -10,10 +9,7 @@ import {
   Vibrate,
   WifiOff,
 } from "lucide-react";
-import { getTea } from "./data/teas";
-import type { Tea } from "./data/teas";
 import { useTeaSession } from "./hooks/useTeaSession";
-import { Catalog } from "./components/Catalog";
 import { Brewing } from "./components/Brewing";
 import { Modal } from "./components/Modal";
 import { unlockAudio } from "./lib/feedback";
@@ -24,11 +20,7 @@ interface InstallEvent extends Event {
 }
 export default function App() {
   const controller = useTeaSession();
-  const [screen, setScreen] = useState<"catalog" | "brewing">(() =>
-    controller.session ? "brewing" : "catalog",
-  );
   const [settingsOpen, setSettingsOpen] = useState(false);
-  const [pendingTea, setPendingTea] = useState<Tea | null>(null);
   const [install, setInstall] = useState<InstallEvent | null>(null);
   const [online, setOnline] = useState(navigator.onLine);
   const [installed, setInstalled] = useState(
@@ -55,21 +47,6 @@ export default function App() {
       window.removeEventListener("offline", onlineChange);
     };
   }, []);
-  const select = (tea: Tea) => {
-    if (controller.session && controller.session.teaId !== tea.id) {
-      setPendingTea(tea);
-      return;
-    }
-    if (!controller.session) controller.selectTea(tea);
-    setScreen("brewing");
-    window.scrollTo(0, 0);
-  };
-  const tea = controller.session && getTea(controller.session.teaId);
-  const end = () => {
-    controller.endSession();
-    setScreen("catalog");
-    window.scrollTo(0, 0);
-  };
   return (
     <MotionConfig reducedMotion="user">
       <div className="app-shell">
@@ -77,14 +54,7 @@ export default function App() {
           Перейти к содержимому
         </a>
         <header className="site-header page-width">
-          <button
-            className="brand"
-            aria-label="tick tea — к коллекции чаёв"
-            onClick={() => {
-              setScreen("catalog");
-              window.scrollTo(0, 0);
-            }}
-          >
+          <div className="brand" aria-label="tick tea">
             <span className="brand-mark">
               <Leaf size={23} strokeWidth={1.5} />
             </span>
@@ -92,7 +62,7 @@ export default function App() {
               tick<span className="brand-space">tea</span>
               <span className="brand-dot">.</span>
             </span>
-          </button>
+          </div>
           <span className="header-caption">ВРЕМЯ БЫТЬ ЗДЕСЬ</span>
           <div className="header-actions">
             {!online && (
@@ -126,25 +96,11 @@ export default function App() {
           </div>
         )}
         <div id="main-content" tabIndex={-1}>
-          <AnimatePresence mode="wait">
-            {screen === "brewing" && controller.session && tea ? (
-              <Brewing
-                key={`brewing-${tea.id}`}
-                tea={tea}
-                session={controller.session}
-                dispatch={controller.dispatch}
-                onBack={() => setScreen("catalog")}
-                onEnd={end}
-              />
-            ) : (
-              <Catalog
-                key="catalog"
-                session={controller.session}
-                onSelect={select}
-                onResume={() => setScreen("brewing")}
-              />
-            )}
-          </AnimatePresence>
+          <Brewing
+            session={controller.session}
+            dispatch={controller.dispatch}
+            onEnd={controller.endSession}
+          />
         </div>
         <footer className="site-footer page-width">
           <span>
@@ -258,34 +214,6 @@ export default function App() {
                 )
               )}
             </div>
-          </Modal>
-        )}
-        {pendingTea && (
-          <Modal
-            title="Начать новое чаепитие?"
-            onClose={() => setPendingTea(null)}
-          >
-            <p className="modal-description">
-              Текущая сессия и её история будут сброшены. Начнём заваривать{" "}
-              {pendingTea.name}?
-            </p>
-            <button
-              className="primary-button"
-              onClick={() => {
-                controller.selectTea(pendingTea);
-                setPendingTea(null);
-                setScreen("brewing");
-                window.scrollTo(0, 0);
-              }}
-            >
-              Начать новое чаепитие <ArrowRight size={18} />
-            </button>
-            <button
-              className="modal-cancel"
-              onClick={() => setPendingTea(null)}
-            >
-              Оставить текущий чай
-            </button>
           </Modal>
         )}
       </div>

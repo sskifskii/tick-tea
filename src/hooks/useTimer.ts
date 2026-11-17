@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import type { Session } from "../lib/session";
 import { remainingAt } from "../lib/session";
 
-// Только компонент часов обновляется во время отсчёта; каталог и остальной UI стабильны.
+// Только компонент часов обновляется во время отсчёта; остальной UI стабильны.
 export function useTimer(session: Session) {
   const [now, setNow] = useState(Date.now);
   useEffect(() => {

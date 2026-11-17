@@ -1,14 +1,13 @@
 // @vitest-environment jsdom
 import { act, cleanup, renderHook } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { teas } from "../data/teas";
 import { STORAGE_KEY } from "../lib/storage";
 import { useTeaSession } from "./useTeaSession";
 
 vi.mock("../lib/feedback", () => ({ completionFeedback: vi.fn() }));
 import { completionFeedback } from "../lib/feedback";
 beforeEach(() => {
-  localStorage.clear();
+  sessionStorage.clear();
   vi.useFakeTimers();
   vi.setSystemTime(100000);
   vi.mocked(completionFeedback).mockClear();
@@ -21,7 +20,10 @@ afterEach(() => {
 describe("управление живой сессией", () => {
   it("проходит сценарий A и посылает один сигнал завершения", () => {
     const { result } = renderHook(useTeaSession);
-    act(() => result.current.selectTea(teas[0]));
+    act(() => {
+      result.current.dispatch({ type: "set-duration", seconds: 40 });
+      result.current.dispatch({ type: "set-increment", seconds: 15 });
+    });
     act(() => result.current.dispatch({ type: "start", now: Date.now() }));
     act(() => vi.advanceTimersByTime(40000));
     expect(result.current.session).toMatchObject({
@@ -31,7 +33,7 @@ describe("управление живой сессией", () => {
     expect(completionFeedback).toHaveBeenCalledTimes(1);
     act(() => vi.advanceTimersByTime(3000));
     expect(completionFeedback).toHaveBeenCalledTimes(1);
-    act(() => result.current.dispatch({ type: "next", increment: 15 }));
+    act(() => result.current.dispatch({ type: "next" }));
     expect(result.current.session).toMatchObject({
       duration: 55,
       status: "idle",
@@ -40,14 +42,17 @@ describe("управление живой сессией", () => {
   });
   it("сценарий B: ручные 30 секунд дают следующие 45", () => {
     const { result } = renderHook(useTeaSession);
-    act(() => result.current.selectTea(teas[0]));
+    act(() => {
+      result.current.dispatch({ type: "set-duration", seconds: 40 });
+      result.current.dispatch({ type: "set-increment", seconds: 15 });
+    });
     act(() => result.current.dispatch({ type: "start", now: Date.now() }));
     act(() => vi.advanceTimersByTime(40000));
-    act(() => result.current.dispatch({ type: "next", increment: 15 }));
+    act(() => result.current.dispatch({ type: "next" }));
     act(() => result.current.dispatch({ type: "set-duration", seconds: 30 }));
     act(() => result.current.dispatch({ type: "start", now: Date.now() }));
     act(() => vi.advanceTimersByTime(30000));
-    act(() => result.current.dispatch({ type: "next", increment: 15 }));
+    act(() => result.current.dispatch({ type: "next" }));
     expect(result.current.session).toMatchObject({
       duration: 45,
       infusion: 3,
@@ -59,7 +64,6 @@ describe("управление живой сессией", () => {
   });
   it("сценарий C: размонтирование и открытие истёкшей сессии на 70 секунд", () => {
     const first = renderHook(useTeaSession);
-    act(() => first.result.current.selectTea(teas[0]));
     act(() =>
       first.result.current.dispatch({ type: "set-duration", seconds: 70 }),
     );
@@ -70,7 +74,6 @@ describe("управление живой сессией", () => {
     act(() => vi.advanceTimersByTime(75000));
     const restored = renderHook(useTeaSession);
     expect(restored.result.current.session).toMatchObject({
-      teaId: "da-hong-pao",
       duration: 70,
       infusion: 1,
       status: "completed",
@@ -81,37 +84,43 @@ describe("управление живой сессией", () => {
   it("быстрые действия читают актуальное состояние до React-перерисовки", () => {
     const { result } = renderHook(useTeaSession);
     act(() => {
-      result.current.selectTea(teas[0]);
+      result.current.dispatch({ type: "set-duration", seconds: 40 });
       result.current.dispatch({ type: "start", now: Date.now() });
       result.current.dispatch({ type: "start", now: Date.now() + 5000 });
     });
     expect(result.current.session?.endsAt).toBe(140000);
     act(() => vi.advanceTimersByTime(40000));
     act(() => {
-      result.current.dispatch({ type: "next", increment: 15 });
-      result.current.dispatch({ type: "next", increment: 15 });
+      result.current.dispatch({ type: "next" });
+      result.current.dispatch({ type: "next" });
     });
     expect(result.current.session?.infusion).toBe(2);
   });
-  it("сценарий D: завершение удаляет старую сессию, новый чай начинает с нуля", () => {
+  it("завершение сбрасывает таймер и историю нового чаепития", () => {
     const { result } = renderHook(useTeaSession);
-    act(() => result.current.selectTea(teas[0]));
+    act(() => {
+      result.current.dispatch({ type: "set-duration", seconds: 40 });
+      result.current.dispatch({ type: "set-increment", seconds: 15 });
+    });
     act(() => result.current.dispatch({ type: "start", now: Date.now() }));
     act(() => result.current.endSession());
-    expect(JSON.parse(localStorage.getItem(STORAGE_KEY)!).session).toBeNull();
-    act(() => result.current.selectTea(teas[2]));
+    expect(
+      JSON.parse(sessionStorage.getItem(STORAGE_KEY)!).session.history,
+    ).toEqual([]);
     act(() => vi.advanceTimersByTime(40000));
     expect(result.current.session).toMatchObject({
-      teaId: "shu-puer",
       status: "idle",
-      duration: 15,
+      duration: 30,
       infusion: 1,
       history: [],
     });
   });
   it("visibilitychange догоняет время без ожидания очередного тика", () => {
     const { result } = renderHook(useTeaSession);
-    act(() => result.current.selectTea(teas[0]));
+    act(() => {
+      result.current.dispatch({ type: "set-duration", seconds: 40 });
+      result.current.dispatch({ type: "set-increment", seconds: 15 });
+    });
     act(() => result.current.dispatch({ type: "start", now: Date.now() }));
     act(() => {
       vi.setSystemTime(200000);

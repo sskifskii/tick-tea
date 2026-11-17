@@ -1,48 +1,40 @@
 import { useEffect, useRef, useState } from "react";
 import {
-  ArrowLeft,
   ArrowRight,
   Check,
-  Clock3,
-  Leaf,
   Minus,
   Pause,
   Play,
   Plus,
   RotateCcw,
   SlidersHorizontal,
-  Thermometer,
   X,
 } from "lucide-react";
 import { motion } from "motion/react";
-import type { Tea } from "../data/teas";
 import type { Session, SessionAction } from "../lib/session";
 import { MAX_SECONDS, MIN_SECONDS, nextDuration } from "../lib/session";
 import { Timer } from "./Timer";
-import { TeaArt } from "./TeaArt";
 import { Modal } from "./Modal";
 import { unlockAudio } from "../lib/feedback";
 
 export function Brewing({
-  tea,
   session,
   dispatch,
-  onBack,
   onEnd,
 }: {
-  tea: Tea;
   session: Session;
   dispatch: (action: SessionAction) => void;
-  onBack: () => void;
   onEnd: () => void;
 }) {
   const heading = useRef<HTMLHeadingElement>(null);
   useEffect(() => {
     heading.current?.focus({ preventScroll: true });
   }, []);
-  const [dialog, setDialog] = useState<"time" | "restart" | "end" | null>(null);
+  const [dialog, setDialog] = useState<
+    "time" | "increment" | "restart" | "end" | null
+  >(null);
   const [precise, setPrecise] = useState(String(session.duration));
-  const canEdit = session.status === "idle";
+  const canEdit = session.status === "idle" || session.status === "paused";
   const completed = session.status === "completed";
   const labels = {
     idle: "Начать пролив",
@@ -52,7 +44,7 @@ export function Brewing({
   };
   const primary = () => {
     unlockAudio();
-    if (completed) dispatch({ type: "next", increment: tea.increment });
+    if (completed) dispatch({ type: "next" });
     else if (session.status === "running")
       dispatch({ type: "pause", now: Date.now() });
     else dispatch({ type: "start", now: Date.now() });
@@ -63,7 +55,7 @@ export function Brewing({
   };
   const exactValid =
     /^\d+$/.test(precise) &&
-    Number(precise) >= MIN_SECONDS &&
+    Number(precise) >= (dialog === "increment" ? 0 : MIN_SECONDS) &&
     Number(precise) <= MAX_SECONDS;
   return (
     <motion.main
@@ -73,17 +65,11 @@ export function Brewing({
       exit={{ opacity: 0, y: -8 }}
       transition={{ duration: 0.3 }}
     >
-      <button className="back-link" onClick={onBack}>
-        <ArrowLeft size={17} /> Чайная коллекция
-      </button>
       <div className="brew-heading">
         <div>
-          <div className="eyebrow">
-            {tea.category} <span> / </span> {tea.region}
-          </div>
+          <div className="eyebrow">ВРЕМЯ ДЛЯ ЧАЯ</div>
           <h1 ref={heading} tabIndex={-1}>
-            {tea.name}
-            <span className="brew-chinese">{tea.chinese}</span>
+            Ваш момент спокойствия
           </h1>
         </div>
         <span className="session-badge">
@@ -92,37 +78,34 @@ export function Brewing({
       </div>
       <div className="brew-layout">
         <section className="brew-main" aria-label="Таймер заваривания">
-          <div className="brew-specs">
-            <div>
-              <Thermometer size={19} />
+          <div className="timer-parameters">
+            <button
+              disabled={!canEdit}
+              onClick={() => {
+                setPrecise(String(session.duration));
+                setDialog("time");
+              }}
+            >
               <span>
-                <strong>
-                  {tea.temperature}
-                  <small> °C</small>
-                </strong>
-                <span>температура</span>
+                {session.infusion === 1 ? "Стартовое время" : "Текущий пролив"}
               </span>
-            </div>
-            <div>
-              <Leaf size={19} />
-              <span>
-                <strong>
-                  {tea.grams}
-                  <small> г / 100 мл</small>
-                </strong>
-                <span>количество чая</span>
-              </span>
-            </div>
-            <div>
-              <Clock3 size={19} />
-              <span>
-                <strong>
-                  +{tea.increment}
-                  <small> с</small>
-                </strong>
-                <span>шаг пролива</span>
-              </span>
-            </div>
+              <strong>
+                {session.duration}
+                <small> с</small>
+              </strong>
+            </button>
+            <button
+              onClick={() => {
+                setPrecise(String(session.increment));
+                setDialog("increment");
+              }}
+            >
+              <span>Прибавлять к проливу</span>
+              <strong>
+                +{session.increment}
+                <small> с</small>
+              </strong>
+            </button>
           </div>
           <Timer session={session} />
           <div
@@ -180,7 +163,7 @@ export function Brewing({
             </motion.button>
             <div className="under-button" aria-live="polite">
               {completed
-                ? `Следующий — ${nextDuration(session.duration, tea.increment)} с. Начните, когда будете готовы.`
+                ? `Следующий — ${nextDuration(session.duration, session.increment)} с. Начните, когда будете готовы.`
                 : session.status === "running"
                   ? "Вдохните. Всё идёт своим чередом."
                   : session.status === "paused"
@@ -206,30 +189,6 @@ export function Brewing({
           </div>
         </section>
         <aside className="brew-sidebar">
-          <section className="tea-story">
-            <div
-              className="story-visual"
-              style={{ "--tea-color": tea.color } as React.CSSProperties}
-            >
-              <TeaArt tea={tea} />
-              <span>{tea.chinese}</span>
-            </div>
-            <div className="eyebrow">ХАРАКТЕР ВАШЕГО ЧАЯ</div>
-            <h2>{tea.description}</h2>
-            <div className="taste-notes">
-              {tea.notes.map((note) => (
-                <span key={note}>{note}</span>
-              ))}
-            </div>
-            <div className="recommendation">
-              <Leaf size={18} />
-              <p>{tea.recommendation}</p>
-            </div>
-            <p className="recipe-note">
-              Рецепт — ориентир для гайвани. Время можно менять перед каждым
-              проливом.
-            </p>
-          </section>
           <section className="history" aria-labelledby="history-title">
             <div className="history-heading">
               <h2 id="history-title">История проливов</h2>
@@ -257,34 +216,51 @@ export function Brewing({
               </ol>
             )}
             <div className="history-foot">
-              <span className="status-dot" /> Сохраняется на этом устройстве
+              <span className="status-dot" /> Сохраняется в этой вкладке до её
+              закрытия
             </div>
           </section>
         </aside>
       </div>
-      {dialog === "time" && (
-        <Modal title="Время вашего пролива" onClose={() => setDialog(null)}>
+      {(dialog === "time" || dialog === "increment") && (
+        <Modal
+          title={
+            dialog === "increment"
+              ? "Шаг между проливами"
+              : "Время вашего пролива"
+          }
+          onClose={() => setDialog(null)}
+        >
           <p className="modal-description">
-            Доверьтесь вкусу. Следующий пролив будет на {tea.increment} с дольше
-            выбранного времени.
+            {dialog === "increment"
+              ? "Этот шаг автоматически прибавляется к времени предыдущего пролива. Укажите 0 для одинаковой длительности."
+              : session.status === "paused"
+                ? "Отсчёт начнётся заново с выбранного времени. История предыдущих проливов сохранится."
+                : `Следующий пролив будет на ${session.increment} с дольше выбранного времени.`}
           </p>
           <form
             onSubmit={(event) => {
               event.preventDefault();
               if (exactValid) {
-                dispatch({ type: "set-duration", seconds: Number(precise) });
+                dispatch({
+                  type:
+                    dialog === "increment" ? "set-increment" : "set-duration",
+                  seconds: Number(precise),
+                });
                 setDialog(null);
               }
             }}
           >
             <label className="duration-label" htmlFor="exact-duration">
-              Длительность в секундах
+              {dialog === "increment"
+                ? "Прибавка в секундах"
+                : "Длительность в секундах"}
             </label>
             <div className="duration-input">
               <input
                 id="exact-duration"
                 type="number"
-                min={MIN_SECONDS}
+                min={dialog === "increment" ? 0 : MIN_SECONDS}
                 max={MAX_SECONDS}
                 step="1"
                 inputMode="numeric"
@@ -294,13 +270,16 @@ export function Brewing({
               />
               <span>секунд</span>
             </div>
-            <p className="input-hint">От 1 до 3 599 секунд (59:59)</p>
+            <p className="input-hint">
+              От {dialog === "increment" ? 0 : 1} до 3 599 секунд (59:59)
+            </p>
             <button
               className="primary-button"
               type="submit"
               disabled={!exactValid}
             >
-              Сохранить время <Check size={18} />
+              {dialog === "increment" ? "Сохранить шаг" : "Сохранить время"}{" "}
+              <Check size={18} />
             </button>
           </form>
         </Modal>
@@ -328,8 +307,14 @@ export function Brewing({
             Текущая сессия и история проливов будут сброшены. Новый ритуал
             начнётся с чистого листа.
           </p>
-          <button className="primary-button" onClick={onEnd}>
-            Завершить и вернуться к чаям <ArrowRight size={18} />
+          <button
+            className="primary-button"
+            onClick={() => {
+              setDialog(null);
+              onEnd();
+            }}
+          >
+            Начать новое чаепитие <ArrowRight size={18} />
           </button>
           <button className="modal-cancel" onClick={() => setDialog(null)}>
             Остаться с чаем

@@ -1,4 +1,3 @@
-import type { Tea } from "../data/teas";
 export const MIN_SECONDS = 1;
 export const MAX_SECONDS = 3599;
 export type TimerStatus = "idle" | "running" | "paused" | "completed";
@@ -7,7 +6,7 @@ export interface Infusion {
   duration: number;
 }
 export interface Session {
-  teaId: string;
+  increment: number;
   infusion: number;
   duration: number;
   remainingMs: number;
@@ -21,7 +20,8 @@ export type SessionAction =
   | { type: "tick"; now: number }
   | { type: "set-duration"; seconds: number }
   | { type: "restart" }
-  | { type: "next"; increment: number };
+  | { type: "set-increment"; seconds: number }
+  | { type: "next" };
 export const clampDuration = (seconds: number) =>
   Math.min(
     MAX_SECONDS,
@@ -36,11 +36,16 @@ export const remainingAt = (session: Session, now: number) =>
   session.status === "running" && session.endsAt !== null
     ? Math.min(session.duration * 1000, Math.max(0, session.endsAt - now))
     : session.remainingMs;
-export const createSession = (tea: Tea): Session => ({
-  teaId: tea.id,
+export const clampIncrement = (seconds: number) =>
+  Math.min(
+    MAX_SECONDS,
+    Math.max(0, Math.round(Number.isFinite(seconds) ? seconds : 0)),
+  );
+export const createSession = (initialTime = 30, increment = 5): Session => ({
+  increment: clampIncrement(increment),
   infusion: 1,
-  duration: tea.initialTime,
-  remainingMs: tea.initialTime * 1000,
+  duration: clampDuration(initialTime),
+  remainingMs: clampDuration(initialTime) * 1000,
   endsAt: null,
   status: "idle",
   history: [],
@@ -83,10 +88,19 @@ export function transition(session: Session, action: SessionAction): Session {
       };
     }
     case "set-duration": {
-      if (session.status !== "idle") return session;
+      if (session.status !== "idle" && session.status !== "paused")
+        return session;
       const duration = clampDuration(action.seconds);
-      return { ...session, duration, remainingMs: duration * 1000 };
+      return {
+        ...session,
+        duration,
+        remainingMs: duration * 1000,
+        status: "idle",
+        endsAt: null,
+      };
     }
+    case "set-increment":
+      return { ...session, increment: clampIncrement(action.seconds) };
     case "restart":
       return {
         ...session,
@@ -99,7 +113,7 @@ export function transition(session: Session, action: SessionAction): Session {
       };
     case "next": {
       if (session.status !== "completed") return session;
-      const duration = nextDuration(session.duration, action.increment);
+      const duration = nextDuration(session.duration, session.increment);
       return {
         ...session,
         infusion: session.infusion + 1,

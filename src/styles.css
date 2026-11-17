@@ -164,14 +164,6 @@ button {
   font-size: 11px;
   color: var(--accent);
 }
-.hero {
-  display: grid;
-  grid-template-columns: 1.15fr 1fr;
-  align-items: center;
-  min-height: 364px;
-  position: relative;
-  padding: 45px 0 40px;
-}
 .eyebrow {
   font-size: 9px;
   font-weight: 600;
@@ -181,36 +173,6 @@ button {
   align-items: center;
   gap: 9px;
 }
-.tiny-line {
-  width: 23px;
-  height: 1px;
-  background: var(--accent);
-  display: inline-block;
-}
-.hero h1 {
-  font-size: clamp(42px, 4.7vw, 64px);
-  font-weight: 450;
-  line-height: 1.13;
-  letter-spacing: -3px;
-  margin-top: 20px;
-}
-.hero h1 span {
-  color: var(--accent);
-}
-.hero p {
-  color: var(--muted);
-  font-size: 13px;
-  line-height: 1.9;
-  margin-top: 19px;
-}
-.hero-foot {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 10px;
-  color: var(--muted);
-  margin-top: 26px;
-}
 .status-dot {
   width: 5px;
   height: 5px;
@@ -219,284 +181,6 @@ button {
   border-radius: 50%;
   display: inline-block;
   flex-shrink: 0;
-}
-.hero-separator {
-  color: #55594d;
-  padding: 0 5px;
-}
-.ritual-art {
-  width: 100%;
-  max-height: 330px;
-  transform: translateY(9px);
-}
-.steam {
-  animation: steam 8s ease-in-out infinite;
-}
-.collection {
-  padding-top: 21px;
-}
-.collection-heading {
-  display: flex;
-  justify-content: space-between;
-  align-items: end;
-  margin-bottom: 27px;
-}
-.collection-heading .eyebrow {
-  font-size: 8px;
-  letter-spacing: 1.6px;
-  color: var(--faint);
-}
-.collection h2 {
-  font-size: 27px;
-  letter-spacing: -1px;
-  font-weight: 500;
-  margin-top: 8px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-.count {
-  font-size: 11px;
-  letter-spacing: 0;
-  color: var(--muted);
-  border: 1px solid var(--border);
-  border-radius: 5px;
-  padding: 3px 6px;
-  align-self: center;
-}
-.collection-caption {
-  font-size: 11px;
-  color: var(--faint);
-  text-align: right;
-  line-height: 1.8;
-}
-.catalog-tools {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 22px;
-  margin-bottom: 24px;
-}
-.filters {
-  display: flex;
-  gap: 4px;
-  flex-wrap: wrap;
-}
-.filter {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  justify-content: center;
-  background: none;
-  border: 1px solid transparent;
-  color: var(--muted);
-  border-radius: 8px;
-  padding: 11px 16px;
-  font-size: 11px;
-  min-height: 42px;
-  white-space: nowrap;
-}
-.filter:hover {
-  color: var(--text);
-  background: #ffffff05;
-}
-.filter.active {
-  color: var(--accent);
-  background: #caa77b0d;
-  border-color: #caa77b30;
-}
-.search {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  color: var(--faint);
-  border-bottom: 1px solid #ffffff18;
-  min-height: 42px;
-  max-width: 216px;
-}
-.search input {
-  border: 0;
-  background: none;
-  font-size: 11px;
-  width: 100%;
-  min-width: 0;
-  color: var(--text);
-  padding: 9px 0;
-}
-.search input:focus-visible {
-  outline-offset: 2px;
-}
-.search input::placeholder {
-  color: var(--faint);
-}
-.search button {
-  background: transparent;
-  color: var(--muted);
-  padding: 10px 4px;
-  display: flex;
-}
-.tea-grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 18px;
-}
-.tea-card {
-  padding: 0;
-  border: 1px solid #ffffff0c;
-  border-radius: 12px;
-  overflow: hidden;
-  background: #20221e;
-  text-align: left;
-  position: relative;
-  isolation: isolate;
-}
-.tea-card:hover {
-  border-color: #caa77b50;
-  transform: translateY(-4px);
-  background: #242620;
-}
-.tea-card:active {
-  transform: translateY(-1px);
-}
-.tea-visual {
-  height: 157px;
-  background:
-    radial-gradient(
-      ellipse at 50% 60%,
-      color-mix(in srgb, var(--tea-color) 12%, transparent),
-      transparent 70%
-    ),
-    #1b1d19;
-  position: relative;
-  overflow: hidden;
-}
-.tea-category {
-  position: absolute;
-  top: 17px;
-  left: 17px;
-  z-index: 1;
-  font-size: 9px;
-  padding: 4px 7px;
-  border: 1px solid #ffffff0e;
-  border-radius: 4px;
-  color: #c7c9bc;
-  background: #20221e80;
-}
-.tea-chinese {
-  position: absolute;
-  right: 18px;
-  top: 15px;
-  font-size: 16px;
-  writing-mode: vertical-rl;
-  letter-spacing: 5px;
-  color: var(--tea-color);
-  opacity: 0.35;
-}
-.tea-art {
-  width: 100%;
-  height: 100%;
-  filter: drop-shadow(2px 5px 3px #0005);
-}
-.tea-visual .tea-art {
-  transition: transform 0.6s;
-}
-.tea-card:hover .tea-art {
-  transform: rotate(-3deg) scale(1.06);
-}
-.card-arrow {
-  position: absolute;
-  bottom: 12px;
-  right: 12px;
-  color: var(--tea-color);
-  background: #17181680;
-  width: 29px;
-  height: 29px;
-  border: 1px solid #ffffff10;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  transition: background 0.2s;
-}
-.tea-card:hover .card-arrow {
-  background: var(--accent);
-  color: #171816;
-}
-.tea-card-body {
-  padding: 19px 17px 0;
-}
-.tea-region {
-  color: var(--faint);
-  font-size: 8px;
-  letter-spacing: 1px;
-  margin-bottom: 7px;
-}
-.tea-card h3 {
-  font-size: 19px;
-  font-weight: 550;
-  letter-spacing: -0.6px;
-}
-.tea-card-body > p {
-  font-size: 10px;
-  line-height: 1.7;
-  color: var(--muted);
-  margin-top: 7px;
-  min-height: 34px;
-}
-.taste-notes {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-top: 13px;
-}
-.taste-notes > span {
-  font-size: 8px;
-  line-height: 1.5;
-  border: 1px solid #ffffff0c;
-  padding: 4px 7px;
-  border-radius: 4px;
-  color: #b6b9aa;
-}
-.tea-specs {
-  display: flex;
-  gap: 12px;
-  justify-content: space-between;
-  border-top: 1px solid var(--border);
-  margin-top: 18px;
-  padding: 14px 0;
-  font-size: 9px;
-  color: #bbbcaf;
-}
-.tea-specs > span {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  white-space: nowrap;
-}
-.tea-specs svg {
-  color: #858b77;
-  width: 12px;
-}
-.catalog-note {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 19px;
-  margin: 48px 0;
-  color: #b7b6a8;
-}
-.note-symbol {
-  font-size: 28px;
-  color: #9c9f86;
-  border-right: 1px solid var(--border);
-  padding-right: 20px;
-}
-.catalog-note p {
-  font-size: 11px;
-  line-height: 1.9;
-}
-.catalog-note p span {
-  color: var(--faint);
-  font-size: 10px;
 }
 .site-footer {
   display: flex;
@@ -515,85 +199,6 @@ button {
   padding: 0 13px;
   color: #55584b;
 }
-.resume-banner {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  width: 100%;
-  border: 1px solid #caa77b24;
-  padding: 16px 20px;
-  background: #caa77b08;
-  border-radius: 12px;
-  margin: 0 0 20px;
-  text-align: left;
-}
-.resume-banner > svg {
-  margin-left: auto;
-  color: var(--accent);
-}
-.resume-icon {
-  width: 39px;
-  height: 39px;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  background: #caa77b12;
-  color: var(--accent);
-}
-.resume-banner strong {
-  display: block;
-  font-size: 12px;
-  font-weight: 500;
-}
-.resume-banner small {
-  display: block;
-  font-size: 10px;
-  color: var(--muted);
-  margin-top: 5px;
-}
-.empty-state {
-  text-align: center;
-  padding: 65px 20px;
-  color: var(--muted);
-}
-.empty-state > svg {
-  color: var(--accent);
-  margin-bottom: 18px;
-}
-.empty-state h3 {
-  color: var(--text);
-  font-weight: 500;
-  font-size: 19px;
-}
-.empty-state p {
-  font-size: 12px;
-  margin-top: 10px;
-}
-.text-button {
-  display: inline-flex;
-  align-items: center;
-  gap: 9px;
-  background: none;
-  color: var(--accent);
-  font-size: 12px;
-  min-height: 44px;
-  padding: 6px 0;
-  margin-top: 16px;
-}
-.back-link {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  color: var(--muted);
-  background: none;
-  padding: 0;
-  min-height: 44px;
-  font-size: 11px;
-  margin-top: 22px;
-}
-.back-link:hover {
-  color: var(--accent);
-}
 .brew-heading {
   display: flex;
   align-items: center;
@@ -608,12 +213,6 @@ button {
   display: flex;
   align-items: center;
   gap: 20px;
-}
-.brew-chinese {
-  font-size: 23px;
-  color: #96947c;
-  letter-spacing: 5px;
-  font-weight: 400;
 }
 .brew-heading .eyebrow {
   font-size: 9px;
@@ -650,47 +249,6 @@ button {
   display: flex;
   flex-direction: column;
   align-items: center;
-}
-.brew-specs {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0;
-  width: 100%;
-  padding-bottom: 24px;
-  border-bottom: 1px solid var(--border);
-}
-.brew-specs > div {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 11px;
-  flex: 1;
-  border-right: 1px solid var(--border);
-}
-.brew-specs > div:last-child {
-  border: 0;
-}
-.brew-specs svg {
-  color: #a0a38c;
-}
-.brew-specs strong {
-  display: block;
-  font-size: 20px;
-  font-weight: 500;
-  letter-spacing: -0.5px;
-}
-.brew-specs strong small {
-  font-size: 11px;
-  letter-spacing: 0;
-  color: #bdbfb0;
-  font-weight: 400;
-}
-.brew-specs > div > span > span {
-  display: block;
-  font-size: 8px;
-  color: var(--faint);
-  margin-top: 4px;
 }
 .timer {
   width: min(100%, 340px);
@@ -865,81 +423,11 @@ button {
   flex-direction: column;
   gap: 20px;
 }
-.tea-story,
 .history {
   background: #1d1f1b;
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 24px;
-}
-.story-visual {
-  height: 139px;
-  position: relative;
-  margin: -24px -24px 22px;
-  background:
-    radial-gradient(
-      ellipse at center,
-      color-mix(in srgb, var(--tea-color) 10%, transparent),
-      transparent 75%
-    ),
-    #1b1d19;
-  border-radius: 18px 18px 0 0;
-  overflow: hidden;
-}
-.story-visual .tea-art {
-  width: 80%;
-  margin-left: 5%;
-  transform: scale(0.95);
-}
-.story-visual > span {
-  position: absolute;
-  right: 26px;
-  top: 26px;
-  color: var(--tea-color);
-  font-size: 19px;
-  writing-mode: vertical-rl;
-  letter-spacing: 6px;
-  opacity: 0.45;
-}
-.tea-story .eyebrow {
-  font-size: 8px;
-  letter-spacing: 1.5px;
-}
-.tea-story h2 {
-  font-size: 19px;
-  line-height: 1.5;
-  font-weight: 450;
-  letter-spacing: -0.4px;
-  margin-top: 11px;
-  max-width: 260px;
-}
-.tea-story .taste-notes {
-  margin-top: 13px;
-}
-.recommendation {
-  display: flex;
-  align-items: start;
-  gap: 9px;
-  border-top: 1px solid var(--border);
-  padding-top: 19px;
-  margin-top: 21px;
-}
-.recommendation svg {
-  color: var(--accent);
-  margin-top: 2px;
-  width: 15px;
-}
-.recommendation p {
-  font-size: 10px;
-  line-height: 1.9;
-  color: #b6b8aa;
-}
-.recipe-note {
-  font-size: 8px;
-  line-height: 1.8;
-  color: var(--faint);
-  margin-top: 12px;
-  padding-left: 24px;
 }
 .history {
   padding: 21px 24px;
@@ -1216,17 +704,6 @@ button {
 #main-content:focus {
   outline: none;
 }
-@keyframes steam {
-  0%,
-  100% {
-    transform: translateY(3px);
-    opacity: 0.55;
-  }
-  50% {
-    transform: translateY(-5px);
-    opacity: 1;
-  }
-}
 @keyframes breathe {
   0%,
   100% {
@@ -1260,62 +737,13 @@ button {
   .page-width {
     width: min(1280px, calc(100% - 128px));
   }
-  .hero {
-    min-height: 415px;
-  }
-  .hero h1 {
-    font-size: 68px;
-  }
-  .tea-visual {
-    height: 175px;
-  }
-  .tea-card-body {
-    padding: 20px 20px 0;
-  }
-  .tea-card h3 {
-    font-size: 20px;
-  }
-  .tea-card-body > p {
-    font-size: 11px;
-  }
-  .tea-specs {
-    font-size: 10px;
-  }
-  .tea-specs svg {
-    width: 13px;
-  }
 }
 @media (max-width: 1050px) {
   .page-width {
     width: calc(100% - 56px);
   }
-  .tea-grid {
-    gap: 14px;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-  .tea-visual {
-    height: 166px;
-  }
-  .catalog-tools {
-    gap: 15px;
-  }
-  .filter {
-    padding-inline: 12px;
-  }
   .brew-main {
     padding-inline: 20px;
-  }
-  .brew-specs > div {
-    gap: 7px;
-  }
-  .brew-specs strong {
-    font-size: 18px;
-  }
-  .brew-specs svg {
-    width: 16px;
-  }
-  .brew-specs strong small {
-    font-size: 10px;
   }
   .brew-layout {
     gap: 18px;
@@ -1324,18 +752,11 @@ button {
   .brew-heading h1 {
     font-size: 34px;
   }
-  .brew-chinese {
-    font-size: 20px;
-  }
   .session-badge {
     font-size: 7px;
   }
-  .tea-story,
   .history {
     padding: 21px;
-  }
-  .story-visual {
-    margin: -21px -21px 20px;
   }
 }
 @media (max-width: 760px) {
@@ -1358,85 +779,6 @@ button {
   .header-actions {
     gap: 10px;
   }
-  .hero {
-    min-height: 320px;
-    grid-template-columns: 1.3fr 1fr;
-    padding: 35px 0;
-  }
-  .hero h1 {
-    font-size: 46px;
-    letter-spacing: -2.3px;
-  }
-  .hero .eyebrow {
-    font-size: 7px;
-    letter-spacing: 1px;
-    white-space: nowrap;
-  }
-  .tiny-line {
-    width: 15px;
-  }
-  .hero p {
-    font-size: 11px;
-  }
-  .hero-foot {
-    font-size: 8px;
-    gap: 7px;
-    margin-top: 20px;
-  }
-  .ritual-art {
-    transform: scale(1.2) translateX(-8px);
-  }
-  .collection h2 {
-    font-size: 25px;
-  }
-  .collection-caption {
-    font-size: 9px;
-  }
-  .catalog-tools {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 13px;
-  }
-  .filters {
-    gap: 3px;
-  }
-  .filter {
-    flex: 1;
-    padding: 9px 8px;
-    font-size: 10px;
-    min-height: 40px;
-  }
-  .search {
-    max-width: 100%;
-    border: 1px solid var(--border);
-    background: #ffffff02;
-    padding: 0 12px;
-    border-radius: 8px;
-    min-height: 42px;
-  }
-  .search input {
-    font-size: 11px;
-  }
-  .tea-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 13px;
-  }
-  .tea-visual {
-    height: 160px;
-  }
-  .tea-card-body {
-    padding: 17px 15px 0;
-  }
-  .tea-specs {
-    gap: 8px;
-    font-size: 9px;
-  }
-  .tea-specs > span {
-    gap: 3px;
-  }
-  .tea-specs svg {
-    width: 11px;
-  }
   .brew-layout {
     grid-template-columns: 1fr;
     gap: 20px;
@@ -1450,32 +792,11 @@ button {
   .brew-heading .eyebrow {
     font-size: 8px;
   }
-  .brew-chinese {
-    font-size: 20px;
-  }
   .session-badge {
     display: none;
   }
   .brew-main {
     padding: 24px 25px 18px;
-  }
-  .brew-specs {
-    padding-bottom: 24px;
-  }
-  .brew-specs > div {
-    gap: 10px;
-  }
-  .brew-specs strong {
-    font-size: 21px;
-  }
-  .brew-specs strong small {
-    font-size: 11px;
-  }
-  .brew-specs svg {
-    width: 18px;
-  }
-  .brew-specs > div > span > span {
-    font-size: 8px;
   }
   .timer {
     width: 330px;
@@ -1494,21 +815,8 @@ button {
     align-items: start;
     gap: 16px;
   }
-  .tea-story {
-    padding: 20px;
-  }
-  .story-visual {
-    height: 130px;
-    margin: -20px -20px 20px;
-  }
   .history {
     padding: 20px;
-  }
-  .tea-story h2 {
-    font-size: 16px;
-  }
-  .recommendation p {
-    font-size: 10px;
   }
   .site-footer {
     padding-top: 22px;
@@ -1517,15 +825,6 @@ button {
   }
   .site-footer > span:last-child {
     display: none;
-  }
-  .catalog-note {
-    margin: 35px 0;
-  }
-  .catalog-note p {
-    font-size: 10px;
-  }
-  .catalog-note p span {
-    font-size: 9px;
   }
 }
 @media (max-width: 480px) {
@@ -1563,191 +862,6 @@ button {
   .offline-label span {
     display: none;
   }
-  .hero {
-    display: block;
-    min-height: 355px;
-    padding: 34px 0 25px;
-    overflow: visible;
-  }
-  .hero h1 {
-    font-size: 45px;
-    letter-spacing: -2.6px;
-    line-height: 1.14;
-    margin-top: 18px;
-  }
-  .hero .eyebrow {
-    font-size: 6.8px;
-    letter-spacing: 1.25px;
-  }
-  .hero-copy {
-    position: relative;
-    z-index: 1;
-    pointer-events: none;
-  }
-  .hero p {
-    font-size: 11px;
-    line-height: 1.85;
-    margin-top: 17px;
-  }
-  .hero-foot {
-    margin-top: 40px;
-    font-size: 8px;
-  }
-  .ritual-art {
-    position: absolute;
-    width: 265px;
-    height: 202px;
-    right: -60px;
-    bottom: 2px;
-    transform: rotate(-5deg);
-    opacity: 0.8;
-    pointer-events: none;
-    z-index: 0;
-  }
-  .collection {
-    padding-top: 16px;
-  }
-  .collection-heading {
-    margin-bottom: 22px;
-  }
-  .collection-heading .eyebrow {
-    font-size: 6.8px;
-    letter-spacing: 1.2px;
-  }
-  .collection h2 {
-    font-size: 23px;
-    gap: 9px;
-  }
-  .count {
-    font-size: 9px;
-    padding: 2px 5px;
-  }
-  .collection-caption {
-    font-size: 8px;
-  }
-  .catalog-tools {
-    gap: 13px;
-    margin-bottom: 20px;
-  }
-  .filters {
-    gap: 3px;
-    justify-content: space-between;
-  }
-  .filter {
-    font-size: 9px;
-    padding: 9px 7px;
-    gap: 4px;
-    flex: 0 1 auto;
-    min-height: 40px;
-    border-radius: 7px;
-  }
-  .filter svg {
-    width: 11px;
-  }
-  .tea-grid {
-    gap: 12px;
-  }
-  .tea-visual {
-    height: 125px;
-  }
-  .tea-category {
-    font-size: 7px;
-    left: 10px;
-    top: 11px;
-    padding: 3px 5px;
-  }
-  .tea-chinese {
-    font-size: 13px;
-    top: 11px;
-    right: 10px;
-    letter-spacing: 3px;
-  }
-  .tea-card-body {
-    padding: 13px 11px 0;
-  }
-  .tea-region {
-    font-size: 6.5px;
-    letter-spacing: 0.7px;
-    margin-bottom: 6px;
-  }
-  .tea-card h3 {
-    font-size: 16px;
-    letter-spacing: -0.65px;
-    line-height: 1.4;
-  }
-  .tea-card-body > p {
-    font-size: 9px;
-    min-height: 31px;
-    line-height: 1.7;
-    margin-top: 6px;
-  }
-  .taste-notes {
-    gap: 4px;
-    margin-top: 10px;
-  }
-  .taste-notes > span {
-    font-size: 6.5px;
-    padding: 3px 5px;
-  }
-  .tea-specs {
-    gap: 5px;
-    flex-wrap: wrap;
-    justify-content: flex-start;
-    margin-top: 13px;
-    padding: 11px 0;
-    font-size: 8px;
-    column-gap: 9px;
-    row-gap: 7px;
-  }
-  .tea-specs > span:last-child {
-    margin-left: auto;
-  }
-  .tea-specs svg {
-    width: 9px;
-  }
-  .card-arrow {
-    height: 24px;
-    width: 24px;
-    bottom: 9px;
-    right: 9px;
-  }
-  .card-arrow svg {
-    width: 15px;
-  }
-  .catalog-note {
-    gap: 13px;
-    margin: 34px 0;
-  }
-  .note-symbol {
-    font-size: 23px;
-    padding-right: 13px;
-  }
-  .catalog-note p {
-    font-size: 8.5px;
-  }
-  .catalog-note p span {
-    font-size: 8px;
-  }
-  .resume-banner {
-    padding: 14px 13px;
-    gap: 11px;
-    margin: 0 0 12px;
-  }
-  .resume-banner strong {
-    font-size: 11px;
-  }
-  .resume-banner small {
-    font-size: 9px;
-  }
-  .resume-icon {
-    height: 32px;
-    width: 32px;
-  }
-  .back-link {
-    font-size: 10px;
-    margin-top: 16px;
-    min-height: 38px;
-  }
   .brew-heading {
     margin-top: 13px;
     margin-bottom: 20px;
@@ -1762,35 +876,12 @@ button {
     letter-spacing: 1px;
     gap: 6px;
   }
-  .brew-chinese {
-    font-size: 18px;
-    letter-spacing: 3px;
-  }
   .brew-layout {
     margin-bottom: 30px;
   }
   .brew-main {
     padding: 22px 14px 13px;
     border-radius: 14px;
-  }
-  .brew-specs {
-    padding-bottom: 21px;
-  }
-  .brew-specs > div {
-    gap: 6px;
-  }
-  .brew-specs strong {
-    font-size: 19px;
-  }
-  .brew-specs strong small {
-    font-size: 9px;
-  }
-  .brew-specs svg {
-    width: 15px;
-  }
-  .brew-specs > div > span > span {
-    font-size: 7px;
-    margin-top: 5px;
   }
   .timer {
     width: min(100%, 303px);
@@ -1840,30 +931,10 @@ button {
     flex-direction: column-reverse;
     gap: 16px;
   }
-  .history,
-  .tea-story {
+  .history {
     width: 100%;
     border-radius: 14px;
     padding: 21px;
-  }
-  .story-visual {
-    display: none;
-  }
-  .tea-story h2 {
-    font-size: 20px;
-    max-width: 280px;
-  }
-  .tea-story .taste-notes > span {
-    font-size: 8px;
-  }
-  .recommendation p {
-    font-size: 11px;
-  }
-  .recipe-note {
-    font-size: 9px;
-  }
-  .tea-story .eyebrow {
-    font-size: 7px;
   }
   .history h2 {
     font-size: 12px;
@@ -1907,49 +978,14 @@ button {
   .page-width {
     width: calc(100% - 28px);
   }
-  .hero h1 {
-    font-size: 41px;
-  }
-  .hero .eyebrow {
-    font-size: 6px;
-  }
-  .filter {
-    padding-inline: 5px;
-    font-size: 8px;
-  }
-  .tea-grid {
-    gap: 9px;
-  }
-  .tea-card h3 {
-    font-size: 14px;
-  }
-  .tea-card-body {
-    padding-inline: 9px;
-  }
-  .tea-specs {
-    font-size: 7px;
-    column-gap: 6px;
-  }
-  .tea-specs svg {
-    width: 8px;
-  }
   .brew-heading h1 {
     font-size: 28px;
-  }
-  .brew-chinese {
-    font-size: 16px;
   }
   .quick-adjust {
     gap: 9px;
   }
   .quick-adjust > button.time-edit {
     font-size: 8px;
-  }
-  .brew-specs > div {
-    gap: 4px;
-  }
-  .brew-specs strong {
-    font-size: 17px;
   }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -1961,119 +997,14 @@ button {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
-  .tea-card:hover,
-  .tea-card:hover .tea-art {
-    transform: none;
-  }
   .modal::backdrop {
     backdrop-filter: none;
   }
 }
-/* Читаемые подписи и свободные карточки на небольшом экране. */
 :root {
   --faint: #919588;
 }
 @media (max-width: 480px) {
-  .tea-grid {
-    grid-template-columns: 1fr;
-    gap: 14px;
-  }
-  .tea-card {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) 112px;
-    border-radius: 13px;
-    min-height: 196px;
-  }
-  .tea-visual {
-    grid-column: 2;
-    grid-row: 1;
-    height: 100%;
-    min-height: 196px;
-    overflow: hidden;
-    background:
-      radial-gradient(
-        ellipse at center,
-        color-mix(in srgb, var(--tea-color) 15%, transparent),
-        transparent 85%
-      ),
-      #1b1d19;
-  }
-  .tea-visual .tea-art {
-    position: absolute;
-    width: 218px;
-    height: 160px;
-    left: -56px;
-    top: 31px;
-    transform: rotate(-20deg);
-  }
-  .tea-card:hover .tea-art {
-    transform: rotate(-23deg) scale(1.05);
-  }
-  .tea-category {
-    left: 11px;
-    top: 13px;
-    font-size: 8px;
-  }
-  .tea-chinese {
-    right: 10px;
-    top: 46px;
-    font-size: 16px;
-    z-index: 1;
-  }
-  .card-arrow {
-    bottom: 13px;
-    right: 12px;
-    width: 28px;
-    height: 28px;
-  }
-  .tea-card-body {
-    grid-column: 1;
-    grid-row: 1;
-    padding: 18px 14px 0;
-    min-width: 0;
-  }
-  .tea-region {
-    font-size: 8px;
-    letter-spacing: 0.7px;
-    margin-bottom: 8px;
-  }
-  .tea-card h3 {
-    font-size: 20px;
-    letter-spacing: -0.7px;
-    line-height: 1.3;
-  }
-  .tea-card-body > p {
-    font-size: 11px;
-    line-height: 1.7;
-    min-height: 37px;
-    margin-top: 8px;
-  }
-  .tea-card .taste-notes {
-    margin-top: 11px;
-    gap: 5px;
-  }
-  .tea-card .taste-notes > span {
-    font-size: 8px;
-    padding: 3px 6px;
-  }
-  .tea-specs {
-    font-size: 9px;
-    margin-top: 14px;
-    column-gap: 10px;
-    row-gap: 6px;
-    padding: 12px 0;
-  }
-  .tea-specs > span:last-child {
-    margin-left: 0;
-  }
-  .tea-specs svg {
-    width: 11px;
-  }
-}
-@media (max-width: 480px) {
-  .back-link {
-    margin-top: 12px;
-  }
   .brew-heading {
     margin-top: 10px;
     margin-bottom: 18px;
@@ -2083,9 +1014,6 @@ button {
   }
   .brew-main {
     padding-top: 20px;
-  }
-  .brew-specs {
-    padding-bottom: 16px;
   }
   .timer {
     width: min(100%, 270px);
@@ -2106,9 +1034,6 @@ button {
   .timer-digits {
     font-size: 61px;
   }
-  .brew-specs strong {
-    font-size: 17px;
-  }
   .quick-adjust {
     margin-top: 6px;
     margin-bottom: 10px;
@@ -2124,4 +1049,60 @@ button {
 }
 h1:focus {
   outline: none;
+}
+
+/* Настройки текущего чаепития. */
+.timer-parameters {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  width: 100%;
+  padding-bottom: 22px;
+  border-bottom: 1px solid var(--border);
+}
+.timer-parameters button {
+  background: none;
+  color: var(--text);
+  padding: 8px 12px;
+  border-radius: 8px;
+}
+.timer-parameters button + button {
+  border-left: 1px solid var(--border);
+}
+.timer-parameters button:hover:not(:disabled) {
+  background: #ffffff05;
+}
+.timer-parameters span {
+  display: block;
+  color: var(--muted);
+  font-size: 11px;
+  margin-bottom: 7px;
+}
+.timer-parameters strong {
+  font-size: 26px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+.timer-parameters small {
+  color: var(--accent);
+  font-size: 13px;
+}
+.brewing {
+  padding-top: 25px;
+}
+.brew-sidebar {
+  display: block;
+}
+@media (max-width: 480px) {
+  .brewing {
+    padding-top: 12px;
+  }
+  .brew-heading h1 {
+    font-size: 28px;
+  }
+  .timer-parameters span {
+    font-size: 10px;
+  }
+  .timer-parameters strong {
+    font-size: 23px;
+  }
 }

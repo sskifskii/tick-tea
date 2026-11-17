@@ -1,20 +1,19 @@
-import { getTea } from "../data/teas";
-import { MAX_SECONDS, reconcile } from "./session";
+import { MAX_SECONDS, createSession, reconcile } from "./session";
 import type { Session } from "./session";
-export const STORAGE_KEY = "tick-tea:v1";
+export const STORAGE_KEY = "tick-tea:v2";
 export interface Settings {
   sound: boolean;
   vibration: boolean;
 }
 export interface SavedState {
-  version: 1;
-  session: Session | null;
+  version: 2;
+  session: Session;
   settings: Settings;
 }
 export const defaultSettings: Settings = { sound: true, vibration: true };
 const defaults = (): SavedState => ({
-  version: 1,
-  session: null,
+  version: 2,
+  session: createSession(),
   settings: { ...defaultSettings },
 });
 const isObject = (value: unknown): value is Record<string, unknown> =>
@@ -25,11 +24,7 @@ const integer = (value: unknown, min: number, max: number): value is number =>
   value >= min &&
   value <= max;
 export function validSession(value: unknown): value is Session {
-  if (
-    !isObject(value) ||
-    typeof value.teaId !== "string" ||
-    !getTea(value.teaId)
-  )
+  if (!isObject(value) || !integer(value.increment, 0, MAX_SECONDS))
     return false;
   if (
     !integer(value.infusion, 1, 10000) ||
@@ -76,7 +71,7 @@ export function decodeState(raw: string | null, now = Date.now()): SavedState {
   try {
     if (!raw) return defaults();
     const data: unknown = JSON.parse(raw);
-    if (!isObject(data) || data.version !== 1) return defaults();
+    if (!isObject(data) || data.version !== 2) return defaults();
     const settings =
       isObject(data.settings) &&
       typeof data.settings.sound === "boolean" &&
@@ -84,9 +79,11 @@ export function decodeState(raw: string | null, now = Date.now()): SavedState {
         ? { sound: data.settings.sound, vibration: data.settings.vibration }
         : { ...defaultSettings };
     return {
-      version: 1,
+      version: 2,
       settings,
-      session: validSession(data.session) ? reconcile(data.session, now) : null,
+      session: validSession(data.session)
+        ? reconcile(data.session, now)
+        : createSession(),
     };
   } catch {
     return defaults();
@@ -94,14 +91,14 @@ export function decodeState(raw: string | null, now = Date.now()): SavedState {
 }
 export function loadState(): SavedState {
   try {
-    return decodeState(localStorage.getItem(STORAGE_KEY));
+    return decodeState(sessionStorage.getItem(STORAGE_KEY));
   } catch {
     return defaults();
   }
 }
 export function saveState(state: SavedState): boolean {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     return true;
   } catch {
     return false;

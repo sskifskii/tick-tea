@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { Tea } from "../data/teas";
 import { createSession, transition } from "../lib/session";
 import type { SessionAction } from "../lib/session";
 import { loadState, saveState } from "../lib/storage";
@@ -18,7 +17,6 @@ export function useTeaSession() {
   const dispatch = useCallback(
     (action: SessionAction) => {
       const current = ref.current;
-      if (!current.session) return;
       const next = transition(current.session, action);
       if (next === current.session) return;
       if (current.session.status === "running" && next.status === "completed")
@@ -40,15 +38,12 @@ export function useTeaSession() {
       document.removeEventListener("visibilitychange", tick);
     };
   }, [state.session?.status, dispatch]);
-  const selectTea = (tea: Tea) =>
-    commit({ ...ref.current, session: createSession(tea) });
-  const endSession = () => commit({ ...ref.current, session: null });
+  const endSession = () => commit({ ...ref.current, session: createSession() });
   const setSettings = (settings: Settings) =>
     commit({ ...ref.current, settings });
   return {
     ...state,
     dispatch,
-    selectTea,
     endSession,
     setSettings,
     storageAvailable,
