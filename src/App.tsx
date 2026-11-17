@@ -104,11 +104,9 @@ export default function App() {
         </div>
         <footer className="site-footer page-width">
           <span>
-            tick tea<span className="brand-dot">.</span>{" "}
-            <span className="footer-divider">/</span> Сделайте паузу. Заварите
-            чай.
+            tick tea<span className="brand-dot">.</span>
           </span>
-          <span>Никакой спешки. Только настоящий момент.</span>
+          <span>authored by sskifskii</span>
         </footer>
         <div className="sr-only" role="status" aria-live="polite">
           {controller.session?.status === "completed"

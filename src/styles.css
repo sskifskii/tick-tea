@@ -195,10 +195,6 @@ button {
 .site-footer > span:first-child {
   color: #a9ab9e;
 }
-.footer-divider {
-  padding: 0 13px;
-  color: #55584b;
-}
 .brew-heading {
   display: flex;
   align-items: center;
@@ -855,9 +851,6 @@ button {
     padding-top: 22px;
     padding-bottom: max(25px, env(safe-area-inset-bottom));
     font-size: 8px;
-  }
-  .site-footer > span:last-child {
-    display: none;
   }
 }
 @media (max-width: 480px) {
