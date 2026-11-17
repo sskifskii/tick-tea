@@ -90,9 +90,7 @@ export function Timer({ session }: { session: Session }) {
             <>
               <span className="breathing-dot" /> Чай раскрывается
             </>
-          ) : (
-            "Ваш момент спокойствия"
-          )}
+          ) : null}
         </div>
       </div>
     </div>

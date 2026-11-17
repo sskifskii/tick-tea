@@ -1092,6 +1092,200 @@ h1:focus {
 .brew-sidebar {
   display: block;
 }
+/* Общая карточка: крупный циферблат и отдельная колонка управления. */
+.timer-stage,
+.brew-panel {
+  display: contents;
+}
+.brew-main > .timer-stage > .timer {
+  order: 1;
+}
+.brew-main > .timer-stage > .quick-adjust {
+  order: 2;
+}
+.brew-panel > .timer-controls {
+  order: 3;
+}
+.brew-panel > .history {
+  order: 4;
+  width: 100%;
+  margin-top: 20px;
+}
+.brew-layout {
+  display: block;
+}
+.brew-heading h1 {
+  margin: -1px;
+}
+@media (min-width: 761px) {
+  .app-shell {
+    display: flex;
+    flex-direction: column;
+  }
+  .site-header {
+    height: 64px;
+    flex-shrink: 0;
+  }
+  .brand {
+    font-size: 25px;
+  }
+  .brand-mark {
+    width: 32px;
+    height: 32px;
+  }
+  #main-content {
+    flex: 1;
+    display: flex;
+    align-items: center;
+  }
+  .brewing {
+    padding-top: 16px;
+    padding-bottom: 20px;
+  }
+  .brew-heading {
+    margin: 0 0 16px;
+  }
+  .session-badge {
+    padding: 8px 12px;
+  }
+  .brew-layout {
+    margin-bottom: 0;
+  }
+  .brew-main {
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(280px, 1fr);
+    align-items: center;
+    gap: clamp(24px, 4vw, 64px);
+    padding: 24px clamp(24px, 4vw, 56px);
+  }
+  .timer-stage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 0;
+  }
+  .timer {
+    width: min(100%, clamp(260px, calc(100dvh - 306px), 480px));
+    margin-top: 0;
+    container-type: inline-size;
+  }
+  .timer-digits {
+    font-size: clamp(64px, 23cqi, 108px);
+    letter-spacing: -4px;
+  }
+  .timer-caption {
+    font-size: 11px;
+  }
+  .quick-adjust {
+    gap: 12px;
+    margin: 12px 0 0;
+  }
+  .quick-adjust > button {
+    min-height: 44px;
+    min-width: 64px;
+    border-radius: 10px;
+  }
+  .quick-adjust > button.time-edit {
+    padding-inline: 12px;
+  }
+  .brew-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    min-width: 0;
+    border-left: 1px solid var(--border);
+    padding-left: clamp(24px, 3vw, 40px);
+  }
+  .timer-parameters {
+    padding-bottom: 16px;
+  }
+  .timer-parameters button {
+    padding: 4px 8px;
+  }
+  .timer-parameters span {
+    font-size: 10px;
+    margin-bottom: 6px;
+  }
+  .timer-parameters strong {
+    font-size: 28px;
+  }
+  .timer-controls {
+    width: 100%;
+  }
+  .timer-controls > .primary-button {
+    min-height: 52px;
+    padding-block: 12px;
+  }
+  .under-button {
+    margin-top: 8px;
+  }
+  .secondary-controls {
+    margin-top: 4px;
+    gap: 18px;
+  }
+  .brew-panel > .history {
+    margin-top: 0;
+    padding: 16px 0 0;
+    border: 0;
+    border-top: 1px solid var(--border);
+    border-radius: 0;
+    background: none;
+  }
+  .history-empty {
+    padding-block: 12px;
+  }
+  .history ol {
+    max-height: 96px;
+  }
+  .history-foot {
+    padding-top: 10px;
+    line-height: 1.6;
+  }
+  .site-footer {
+    padding-block: 14px max(14px, env(safe-area-inset-bottom));
+  }
+}
+@media (min-width: 761px) and (max-height: 700px) {
+  .site-header {
+    height: 56px;
+  }
+  .brewing {
+    padding-block: 10px 16px;
+  }
+  .brew-heading {
+    margin-bottom: 12px;
+  }
+  .brew-main {
+    padding-block: 16px;
+  }
+  .brew-panel {
+    gap: 12px;
+  }
+  .timer-parameters {
+    padding-bottom: 12px;
+  }
+  .timer-parameters strong {
+    font-size: 24px;
+  }
+  .timer-controls > .primary-button {
+    min-height: 48px;
+  }
+  .secondary-controls {
+    margin-top: 0;
+  }
+  .secondary-controls > button {
+    min-height: 36px;
+  }
+  .history ol {
+    max-height: 72px;
+  }
+  .history-empty {
+    padding-block: 10px;
+  }
+  .site-footer {
+    padding-block: 10px max(10px, env(safe-area-inset-bottom));
+  }
+}
 @media (max-width: 480px) {
   .brewing {
     padding-top: 12px;
