@@ -10,7 +10,7 @@ import {
   SlidersHorizontal,
   X,
 } from "lucide-react";
-import { motion } from "motion/react";
+import { motion, useReducedMotion } from "motion/react";
 import type { Session, SessionAction } from "../lib/session";
 import { MAX_SECONDS, MIN_SECONDS, nextDuration } from "../lib/session";
 import { Timer } from "./Timer";
@@ -27,6 +27,8 @@ export function Brewing({
   onEnd: () => void;
 }) {
   const heading = useRef<HTMLHeadingElement>(null);
+  const durationInput = useRef<HTMLInputElement>(null);
+  const reducedMotion = useReducedMotion();
   useEffect(() => {
     heading.current?.focus({ preventScroll: true });
   }, []);
@@ -65,165 +67,172 @@ export function Brewing({
       exit={{ opacity: 0, y: -8 }}
       transition={{ duration: 0.3 }}
     >
-      <div className="brew-heading">
-        <div>
-          <div className="eyebrow">ВРЕМЯ ДЛЯ ЧАЯ</div>
-          <h1 ref={heading} tabIndex={-1}>
-            Ваш момент спокойствия
-          </h1>
-        </div>
-        <span className="session-badge">
-          <span className="status-dot" /> ВАШ ЧАЙНЫЙ РИТУАЛ
-        </span>
-      </div>
+      <h1 ref={heading} tabIndex={-1} className="sr-only">
+        Таймер заваривания
+      </h1>
       <div className="brew-layout">
         <section className="brew-main" aria-label="Таймер заваривания">
-          <div className="timer-parameters">
-            <button
-              disabled={!canEdit}
-              onClick={() => {
-                setPrecise(String(session.duration));
-                setDialog("time");
-              }}
+          <div className="timer-stage">
+            <Timer session={session} />
+            <div
+              className={`quick-adjust ${canEdit ? "" : "quick-adjust--locked"}`}
             >
-              <span>
-                {session.infusion === 1 ? "Стартовое время" : "Текущий пролив"}
-              </span>
-              <strong>
-                {session.duration}
-                <small> с</small>
-              </strong>
-            </button>
-            <button
-              onClick={() => {
-                setPrecise(String(session.increment));
-                setDialog("increment");
-              }}
-            >
-              <span>Прибавлять к проливу</span>
-              <strong>
-                +{session.increment}
-                <small> с</small>
-              </strong>
-            </button>
-          </div>
-          <Timer session={session} />
-          <div
-            className={`quick-adjust ${canEdit ? "" : "quick-adjust--locked"}`}
-          >
-            <button
-              aria-label="Уменьшить время на 5 секунд"
-              disabled={!canEdit || session.duration === MIN_SECONDS}
-              onClick={() =>
-                dispatch({
-                  type: "set-duration",
-                  seconds: session.duration - 5,
-                })
-              }
-            >
-              <Minus size={15} />5 с
-            </button>
-            <button
-              className="time-edit"
-              disabled={!canEdit}
-              onClick={() => {
-                setPrecise(String(session.duration));
-                setDialog("time");
-              }}
-            >
-              <SlidersHorizontal size={15} /> Изменить время
-            </button>
-            <button
-              aria-label="Увеличить время на 5 секунд"
-              disabled={!canEdit || session.duration === MAX_SECONDS}
-              onClick={() =>
-                dispatch({
-                  type: "set-duration",
-                  seconds: session.duration + 5,
-                })
-              }
-            >
-              <Plus size={15} />5 с
-            </button>
-          </div>
-          <div className="timer-controls">
-            <motion.button
-              className="primary-button"
-              whileTap={{ scale: 0.98 }}
-              onClick={primary}
-            >
-              {session.status === "running" ? (
-                <Pause size={19} fill="currentColor" />
-              ) : completed ? (
-                <ArrowRight size={21} />
-              ) : (
-                <Play size={18} fill="currentColor" />
-              )}
-              {labels[session.status]}
-            </motion.button>
-            <div className="under-button" aria-live="polite">
-              {completed
-                ? `Следующий — ${nextDuration(session.duration, session.increment)} с. Начните, когда будете готовы.`
-                : session.status === "running"
-                  ? "Вдохните. Всё идёт своим чередом."
-                  : session.status === "paused"
-                    ? "Продолжите или начните этот пролив заново."
-                    : "Залейте воду и нажмите, чтобы начать."}
-            </div>
-            <div className="secondary-controls">
               <button
-                disabled={session.status === "idle"}
+                aria-label="Уменьшить время на 5 секунд"
+                disabled={!canEdit || session.duration === MIN_SECONDS}
                 onClick={() =>
-                  session.status === "completed"
-                    ? restart()
-                    : setDialog("restart")
+                  dispatch({
+                    type: "set-duration",
+                    seconds: session.duration - 5,
+                  })
                 }
               >
-                <RotateCcw size={15} /> Заново
+                <Minus size={15} />5 с
               </button>
-              <span />
-              <button onClick={() => setDialog("end")}>
-                <X size={15} /> Завершить чаепитие
+              <button
+                className="time-edit"
+                disabled={!canEdit}
+                onClick={() => {
+                  setPrecise(String(session.duration));
+                  setDialog("time");
+                }}
+              >
+                <SlidersHorizontal size={15} /> Изменить время
+              </button>
+              <button
+                aria-label="Увеличить время на 5 секунд"
+                disabled={!canEdit || session.duration === MAX_SECONDS}
+                onClick={() =>
+                  dispatch({
+                    type: "set-duration",
+                    seconds: session.duration + 5,
+                  })
+                }
+              >
+                <Plus size={15} />5 с
               </button>
             </div>
           </div>
+          <div className="brew-panel">
+            <div className="timer-parameters">
+              <button
+                disabled={!canEdit}
+                onClick={() => {
+                  setPrecise(String(session.duration));
+                  setDialog("time");
+                }}
+              >
+                <span>
+                  {session.infusion === 1
+                    ? "Стартовое время"
+                    : "Текущий пролив"}
+                </span>
+                <strong>
+                  {session.duration}
+                  <small> с</small>
+                </strong>
+              </button>
+              <button
+                onClick={() => {
+                  setPrecise(String(session.increment));
+                  setDialog("increment");
+                }}
+              >
+                <span>Прибавлять к проливу</span>
+                <strong>
+                  +{session.increment}
+                  <small> с</small>
+                </strong>
+              </button>
+            </div>
+            <div className="timer-controls">
+              <motion.button
+                className="primary-button"
+                whileTap={{ scale: 0.98 }}
+                onClick={primary}
+              >
+                {session.status === "running" ? (
+                  <Pause size={19} fill="currentColor" />
+                ) : completed ? (
+                  <ArrowRight size={21} />
+                ) : (
+                  <Play size={18} fill="currentColor" />
+                )}
+                {labels[session.status]}
+              </motion.button>
+              <div className="under-button" aria-live="polite">
+                {completed
+                  ? `Следующий — ${nextDuration(session.duration, session.increment)} с. Начните, когда будете готовы.`
+                  : session.status === "running"
+                    ? "Вдохните. Всё идёт своим чередом."
+                    : session.status === "paused"
+                      ? "Продолжите или начните этот пролив заново."
+                      : "Залейте воду и нажмите, чтобы начать."}
+              </div>
+              <div className="secondary-controls">
+                <button
+                  disabled={session.status === "idle"}
+                  onClick={() =>
+                    session.status === "completed"
+                      ? restart()
+                      : setDialog("restart")
+                  }
+                >
+                  <RotateCcw size={15} /> Заново
+                </button>
+                <span />
+                <button onClick={() => setDialog("end")}>
+                  <X size={15} /> Завершить чаепитие
+                </button>
+              </div>
+            </div>
+
+            <section className="history" aria-labelledby="history-title">
+              <div className="history-heading">
+                <h2 id="history-title">История проливов</h2>
+                <span>{String(session.history.length).padStart(2, "0")}</span>
+              </div>
+              {session.history.length === 0 ? (
+                <p className="history-empty">
+                  Первый глоток ещё впереди.
+                  <br />
+                  Здесь появится история вашего чаепития.
+                </p>
+              ) : (
+                <motion.ol layoutScroll>
+                  {[...session.history].reverse().map((item) => (
+                    <motion.li
+                      key={item.number}
+                      layout={reducedMotion ? false : "position"}
+                      initial={reducedMotion ? false : { y: -6 }}
+                      animate={{ y: 0 }}
+                      transition={{
+                        duration: reducedMotion ? 0 : 0.28,
+                        ease: [0.22, 1, 0.36, 1],
+                      }}
+                    >
+                      <span>
+                        <Check size={14} /> Пролив{" "}
+                        {String(item.number).padStart(2, "0")}
+                      </span>
+                      <strong>
+                        {item.duration} <small>с</small>
+                      </strong>
+                    </motion.li>
+                  ))}
+                </motion.ol>
+              )}
+              <div className="history-foot">
+                <span className="status-dot" /> Сохраняется в этой вкладке до её
+                закрытия
+              </div>
+            </section>
+          </div>
         </section>
-        <aside className="brew-sidebar">
-          <section className="history" aria-labelledby="history-title">
-            <div className="history-heading">
-              <h2 id="history-title">История проливов</h2>
-              <span>{String(session.history.length).padStart(2, "0")}</span>
-            </div>
-            {session.history.length === 0 ? (
-              <p className="history-empty">
-                Первый глоток ещё впереди.
-                <br />
-                Здесь появится история вашего чаепития.
-              </p>
-            ) : (
-              <ol>
-                {session.history.map((item) => (
-                  <li key={item.number}>
-                    <span>
-                      <Check size={14} /> Пролив{" "}
-                      {String(item.number).padStart(2, "0")}
-                    </span>
-                    <strong>
-                      {item.duration} <small>с</small>
-                    </strong>
-                  </li>
-                ))}
-              </ol>
-            )}
-            <div className="history-foot">
-              <span className="status-dot" /> Сохраняется в этой вкладке до её
-              закрытия
-            </div>
-          </section>
-        </aside>
       </div>
       {(dialog === "time" || dialog === "increment") && (
         <Modal
+          initialFocusRef={durationInput}
           title={
             dialog === "increment"
               ? "Шаг между проливами"
@@ -258,6 +267,7 @@ export function Brewing({
             </label>
             <div className="duration-input">
               <input
+                ref={durationInput}
                 id="exact-duration"
                 type="number"
                 min={dialog === "increment" ? 0 : MIN_SECONDS}
@@ -266,7 +276,6 @@ export function Brewing({
                 inputMode="numeric"
                 value={precise}
                 onChange={(event) => setPrecise(event.target.value)}
-                autoFocus
               />
               <span>секунд</span>
             </div>

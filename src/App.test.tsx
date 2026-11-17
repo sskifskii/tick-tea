@@ -26,6 +26,7 @@ beforeEach(() => {
   window.scrollTo = vi.fn();
   HTMLDialogElement.prototype.showModal = function () {
     this.setAttribute("open", "");
+    this.querySelector<HTMLElement>("button")?.focus();
   };
   HTMLDialogElement.prototype.close = function () {
     this.removeAttribute("open");
@@ -38,6 +39,46 @@ afterEach(() => {
 });
 const openTimer = () => render(<App />);
 describe("пользовательский интерфейс", () => {
+  it("подстраивает окно ввода под видимую область при открытии клавиатуры и прокрутке", () => {
+    const viewport = Object.assign(new EventTarget(), {
+      height: 800,
+      offsetTop: 0,
+    });
+    const removeListener = vi.spyOn(viewport, "removeEventListener");
+    vi.stubGlobal("visualViewport", viewport);
+    openTimer();
+    fireEvent.click(screen.getByRole("button", { name: /Стартовое время/ }));
+    const dialog = screen.getByRole("dialog");
+    expect(dialog.style.getPropertyValue("--viewport-height")).toBe("800px");
+    viewport.height = 420;
+    viewport.dispatchEvent(new Event("resize"));
+    expect(dialog.style.getPropertyValue("--viewport-height")).toBe("420px");
+    viewport.offsetTop = 50;
+    viewport.dispatchEvent(new Event("scroll"));
+    expect(dialog.style.getPropertyValue("--viewport-top")).toBe("50px");
+    fireEvent.click(
+      within(dialog).getByRole("button", { name: "Закрыть окно" }),
+    );
+    expect(removeListener).toHaveBeenCalledWith("resize", expect.any(Function));
+    expect(removeListener).toHaveBeenCalledWith("scroll", expect.any(Function));
+  });
+  it.each([/Стартовое время/, /Прибавлять к проливу/, /Изменить время/])(
+    "ставит фокус в поле после открытия через %s и возвращает его при закрытии",
+    (name) => {
+      openTimer();
+      const trigger = screen.getByRole("button", { name });
+      trigger.focus();
+      fireEvent.click(trigger);
+      const dialog = screen.getByRole("dialog");
+      expect(document.activeElement).toBe(
+        within(dialog).getByRole("spinbutton"),
+      );
+      fireEvent.click(
+        within(dialog).getByRole("button", { name: "Закрыть окно" }),
+      );
+      expect(document.activeElement).toBe(trigger);
+    },
+  );
   it("сразу открывает таймер без каталога и позволяет настроить шаг", () => {
     openTimer();
     expect(screen.getByRole("timer")).toBeDefined();
