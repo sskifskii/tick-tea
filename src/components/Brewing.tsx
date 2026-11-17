@@ -10,7 +10,7 @@ import {
   SlidersHorizontal,
   X,
 } from "lucide-react";
-import { motion } from "motion/react";
+import { motion, useReducedMotion } from "motion/react";
 import type { Session, SessionAction } from "../lib/session";
 import { MAX_SECONDS, MIN_SECONDS, nextDuration } from "../lib/session";
 import { Timer } from "./Timer";
@@ -28,6 +28,7 @@ export function Brewing({
 }) {
   const heading = useRef<HTMLHeadingElement>(null);
   const durationInput = useRef<HTMLInputElement>(null);
+  const reducedMotion = useReducedMotion();
   useEffect(() => {
     heading.current?.focus({ preventScroll: true });
   }, []);
@@ -198,9 +199,18 @@ export function Brewing({
                   Здесь появится история вашего чаепития.
                 </p>
               ) : (
-                <ol>
-                  {session.history.map((item) => (
-                    <li key={item.number}>
+                <motion.ol layoutScroll>
+                  {[...session.history].reverse().map((item) => (
+                    <motion.li
+                      key={item.number}
+                      layout={reducedMotion ? false : "position"}
+                      initial={reducedMotion ? false : { y: -6 }}
+                      animate={{ y: 0 }}
+                      transition={{
+                        duration: reducedMotion ? 0 : 0.28,
+                        ease: [0.22, 1, 0.36, 1],
+                      }}
+                    >
                       <span>
                         <Check size={14} /> Пролив{" "}
                         {String(item.number).padStart(2, "0")}
@@ -208,9 +218,9 @@ export function Brewing({
                       <strong>
                         {item.duration} <small>с</small>
                       </strong>
-                    </li>
+                    </motion.li>
                   ))}
-                </ol>
+                </motion.ol>
               )}
               <div className="history-foot">
                 <span className="status-dot" /> Сохраняется в этой вкладке до её

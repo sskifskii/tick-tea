@@ -467,6 +467,17 @@ button {
   border-top: 1px solid var(--border);
   font-size: 10px;
   color: var(--muted);
+  animation: history-entry 280ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+@keyframes history-entry {
+  from {
+    opacity: 0;
+    background-color: rgb(197 207 161 / 7%);
+  }
+  to {
+    opacity: 1;
+    background-color: transparent;
+  }
 }
 .history li > span {
   display: flex;
@@ -1256,8 +1267,10 @@ h1:focus {
   .history-empty {
     padding-block: 12px;
   }
+  .history-empty,
   .history ol {
-    max-height: 96px;
+    height: 96px;
+    margin: 13px 0 5px;
   }
   .history-foot {
     padding-top: 10px;
@@ -1298,8 +1311,9 @@ h1:focus {
   .secondary-controls > button {
     min-height: 36px;
   }
+  .history-empty,
   .history ol {
-    max-height: 72px;
+    height: 72px;
   }
   .history-empty {
     padding-block: 10px;
