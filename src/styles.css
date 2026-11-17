@@ -279,13 +279,24 @@ button {
   height: 100%;
   overflow: visible;
 }
-.progress-ring {
-  transition: stroke-dashoffset 0.12s linear;
+.ring-dot-orbit {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.timer--running .ring-dot-orbit {
+  will-change: transform;
 }
 .ring-dot {
-  transform-origin: 160px 160px;
-  transition: transform 0.12s linear;
-  filter: drop-shadow(0 0 4px #caa77b88);
+  position: absolute;
+  top: 5%;
+  left: 50%;
+  width: 2.5%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 4px #caa77b88;
+  transform: translate(-50%, -50%);
 }
 .timer-content {
   position: absolute;
