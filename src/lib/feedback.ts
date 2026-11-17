@@ -5,7 +5,7 @@ export function unlockAudio() {
     context ??= new AudioContext();
     if (context.state === "suspended") void context.resume().catch(() => {});
   } catch {
-    /* Звук — необязательное улучшение. */
+    /* Sound is an optional enhancement. */
   }
 }
 export function completionFeedback(settings: Settings) {
@@ -13,7 +13,7 @@ export function completionFeedback(settings: Settings) {
     try {
       navigator.vibrate([80, 80, 120]);
     } catch {
-      /* API может быть ограничен платформой. */
+      /* The platform may restrict this API. */
     }
   }
   if (!settings.sound || !context || context.state !== "running") return;
@@ -35,6 +35,6 @@ export function completionFeedback(settings: Settings) {
       oscillator.stop(now + offset + 1.2);
     }
   } catch {
-    /* Не мешаем завершению таймера при отказе аудио. */
+    /* Allow the timer to complete even if audio fails. */
   }
 }

@@ -1,81 +1,61 @@
-# tick tea
+<h1 align="center">tick tea.</h1>
 
-Минималистичный таймер для заваривания чая проливами. Задайте стартовое время и прибавку к каждому следующему проливу. Каталога чаёв и рецептов нет. Русский интерфейс, история текущего чаепития и офлайн-режим без аккаунтов и сервера.
+<p align="center">A quiet timer for your tea ritual.</p>
 
-## Запуск
+<p align="center">
+  <a href="https://github.com/sskifskii/tick-tea/actions/workflows/deploy.yml"><img src="https://github.com/sskifskii/tick-tea/actions/workflows/deploy.yml/badge.svg" alt="Build and deployment" /></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-caa77b" alt="MIT license" /></a>
+  <img src="https://img.shields.io/badge/PWA-offline_ready-caa77b" alt="Offline-ready PWA" />
+</p>
 
-Нужен Node.js 22.12+ и npm.
+A minimalist tea infusion timer. Set your starting duration and the time added to each successive infusion, then brew at your own pace. No accounts or server required.
+
+<p align="center">
+  <img src="docs/images/interface.png" alt="Tick tea interface with a circular timer, brewing controls, and infusion history" width="1200" />
+</p>
+
+## Features
+
+- Pause, resume, and fine-tune each infusion.
+- Automatic time increments and history for the current tea session.
+- Optional completion sound and vibration.
+- Installable PWA with offline support after the first successful load and service worker installation.
+- Russian and English interfaces; session restored on tab reload.
+
+## Quick start
+
+Requires **Node.js 22.12+** and **npm**.
 
 ```sh
+git clone https://github.com/sskifskii/tick-tea.git
+cd tick-tea
 npm ci
 npm run dev
 ```
 
+## Development
+
+Built with React, TypeScript, Vite, and Vitest.
+
 ```sh
-npm test          # модель таймера, хранение и пользовательские сценарии
-npm run lint
-npm run build     # TypeScript, production build и Service Worker
-npm run preview
+npm test          # Run tests
+npm run lint      # Check code
+npm run build     # Type-check and build to dist/
+npm run preview   # Preview the production build
 ```
 
-## Использование
+Pull requests and [issues](https://github.com/sskifskii/tick-tea/issues) are welcome. See [AGENTS.md](AGENTS.md) for repository guidelines.
 
-1. Откройте страницу: таймер доступен сразу, начальные значения — 30 секунд и шаг +5 секунд.
-2. Нажмите на стартовое время или прибавку над таймером, чтобы задать свои значения. Длительность — от 1 до 3599 секунд, прибавка — от 0 до 3599 секунд.
-3. Нажмите «Начать пролив». Можно поставить отсчёт на паузу и продолжить его.
-4. Завершённый пролив попадает в историю. «Следующий пролив» подготавливает время с учётом прибавки, но не запускает отсчёт.
-5. Время текущего пролива можно корректировать точно или кнопками ±5 секунд до запуска и на паузе. Изменение на паузе сбрасывает отсчёт на выбранную длительность.
-6. «Завершить чаепитие» после подтверждения очищает историю и возвращает начальные значения.
+## Deployment
 
-Прибавка применяется к выбранной длительности предыдущего пролива: при шаге +15 секунд последовательность 40 → 55 → 70; если второй пролив изменить на 30 секунд, третий будет 45 секунд. Нулевой шаг сохраняет одинаковую длительность. Максимальное время ограничено 59:59.
-
-## Хранение и точность
-
-Текущий таймер, прибавка, история и настройки сигнала хранятся в `sessionStorage` под ключом `tick-tea:v2`. Обновление страницы восстанавливает текущее чаепитие. Данные относятся к текущей вкладке; постоянного архива чаепитий нет. Браузер может восстановить sessionStorage вместе с восстановленной вкладкой. Старые записи каталога в localStorage не читаются и новые данные туда не записываются.
-
-Повреждённая запись открывает новый таймер. При отказе хранилища таймер продолжает работать в памяти, а приложение показывает предупреждение.
-
-Запуск сохраняет `endsAt = Date.now() + remainingMs`. Остаток вычисляется по времени окончания, а не уменьшением счётчика на каждом тике. После возврата во вкладку и обновления страницы состояние сверяется со временем. Пауза сохраняет остаток в миллисекундах. Перезапуск не дублирует историю текущего пролива.
-
-Браузер может задерживать звук и вибрацию в фоне или при блокировке устройства. При возвращении приложение показывает актуальное состояние. Изменение системных часов влияет на таймер. Звук разблокируется пользовательским жестом; вибрация зависит от поддержки браузером.
-
-## Структура
-
-- `src/lib/session.ts` — модель таймера, прибавка, история и переходы состояний.
-- `src/lib/storage.ts` — проверка и восстановление сессии.
-- `src/hooks/useTeaSession.ts` — управление состоянием, хранением и сигналами.
-- `src/hooks/useTimer.ts` — обновление показаний часов.
-- `src/components/` — экран таймера, круговой индикатор и диалоги.
-- `src/styles.css` — оформление и адаптивная вёрстка.
-- `vite.config.ts` — сборка, тесты, Manifest и Service Worker.
-
-## PWA и офлайн
-
-Production-сборка генерирует Manifest, иконки и Service Worker. Все ресурсы, включая шрифт, локальные. После первой успешной загрузки и установки Service Worker приложение работает без сети. Для Service Worker нужен HTTPS или localhost; в dev-режиме он отключён.
-
-Установка доступна в настройках. На iPhone: Safari → «Поделиться» → «На экран Домой». На Android и компьютере — через меню установки браузера.
-
-## Бесплатная публикация
-
-### Cloudflare Pages
-
-1. Подключите репозиторий через **Workers & Pages → Create → Pages → Import an existing Git repository**.
-2. Команда сборки: `npm run build`; каталог результата: `dist`.
-3. Версия Node.js: 24 (переменная окружения `NODE_VERSION=24`, если необходимо).
-4. Для корня домена не задавайте `VITE_BASE_PATH` (используется `/`). Опубликуйте.
-
-Серверные функции и Worker runtime не используются.
-
-### GitHub Pages
-
-Для project Pages нужен путь репозитория: `VITE_BASE_PATH=/tick-tea/`. Для собственного домена или `username.github.io` используйте `/`.
-
-Добавлен workflow `.github/workflows/deploy.yml`: запускает lint и тесты, собирает статические файлы и публикует Pages при push в `main` или ручном запуске. В **Settings → Pages → Source** выберите **GitHub Actions**. Workflow вычисляет base автоматически из имени репозитория; для собственного домена измените `VITE_BASE_PATH` на `/`.
-
-Можно собрать и загрузить `dist/` вручную на любой другой статический хостинг:
+Serve `dist/` on any static host. For subpath hosting, build with:
 
 ```sh
 VITE_BASE_PATH=/tick-tea/ npm run build
 ```
 
-Иконки, Manifest, Service Worker и ресурсы собираются относительно выбранного base. Проверяйте публикацию по адресу с завершающим `/`.
+For GitHub Pages, select **GitHub Actions** in **Settings → Pages**. The included [workflow](.github/workflows/deploy.yml) checks, builds, and deploys on pushes to `main`. Offline support requires HTTPS or localhost.
+
+## License
+
+[MIT](LICENSE) © 2026 [sskifskii](https://github.com/sskifskii).

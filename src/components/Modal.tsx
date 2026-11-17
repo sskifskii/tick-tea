@@ -1,3 +1,4 @@
+import { useLanguage } from "../hooks/useLanguage";
 import { useEffect, useRef } from "react";
 import type { ReactNode, RefObject } from "react";
 import { X } from "lucide-react";
@@ -12,6 +13,7 @@ export function Modal({
   onClose: () => void;
   initialFocusRef?: RefObject<HTMLElement | null>;
 }) {
+  const { t } = useLanguage();
   const ref = useRef<HTMLDialogElement>(null);
   useEffect(() => {
     const viewport = window.visualViewport;
@@ -67,7 +69,7 @@ export function Modal({
         <button
           className="icon-button"
           onClick={onClose}
-          aria-label="Закрыть окно"
+          aria-label={t("Закрыть окно")}
         >
           <X size={20} />
         </button>

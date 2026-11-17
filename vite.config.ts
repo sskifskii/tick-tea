@@ -9,15 +9,20 @@ export default defineConfig({
     VitePWA({
       registerType: "autoUpdate",
       includeAssets: [
+        "manifest.en.webmanifest",
         "icons/icon.svg",
         "icons/icon-192.png",
         "icons/icon-512.png",
         "icons/apple-touch-icon.png",
       ],
       manifest: {
+        id: ".",
+        start_url: ".",
+        scope: ".",
         name: "tick tea — время для чая",
         short_name: "tick tea",
-        description: "Таймер для чая с настраиваемым шагом и историей проливов.",
+        description:
+          "Таймер для чая с настраиваемым шагом и историей проливов.",
         lang: "ru",
         theme_color: "#171816",
         background_color: "#171816",

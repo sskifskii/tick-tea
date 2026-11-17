@@ -1,8 +1,14 @@
+import {
+  LanguageContext,
+  useLanguage,
+  useLanguageController,
+} from "./hooks/useLanguage";
 import { useEffect, useState } from "react";
 import { MotionConfig } from "motion/react";
 import {
   Download,
   Leaf,
+  Languages,
   Settings2,
   Smartphone,
   Volume2,
@@ -19,6 +25,16 @@ interface InstallEvent extends Event {
   userChoice: Promise<{ outcome: string }>;
 }
 export default function App() {
+  const language = useLanguageController();
+  return (
+    <LanguageContext.Provider value={language}>
+      <AppContent />
+    </LanguageContext.Provider>
+  );
+}
+
+function AppContent() {
+  const { language, setLanguage, t } = useLanguage();
   const controller = useTeaSession();
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [install, setInstall] = useState<InstallEvent | null>(null);
@@ -51,7 +67,7 @@ export default function App() {
     <MotionConfig reducedMotion="user">
       <div className="app-shell">
         <a className="skip-link" href="#main-content">
-          Перейти к содержимому
+          {t("Перейти к содержимому")}
         </a>
         <header className="site-header page-width">
           <div className="brand" aria-label="tick tea">
@@ -63,12 +79,12 @@ export default function App() {
               <span className="brand-dot">.</span>
             </span>
           </div>
-          <span className="header-caption">ВРЕМЯ ЧАЯ</span>
+          <span className="header-caption">{t("ВРЕМЯ ЧАЯ")}</span>
           <div className="header-actions">
             {!online && (
               <span className="offline-label">
                 <WifiOff size={15} />
-                <span>Офлайн</span>
+                <span>{t("Офлайн")}</span>
               </span>
             )}
             {!installed && (
@@ -77,12 +93,12 @@ export default function App() {
                 onClick={() => setSettingsOpen(true)}
               >
                 <Download size={16} />
-                <span>Установить</span>
+                <span>{t("Установить")}</span>
               </button>
             )}
             <button
               className="icon-button settings-button"
-              aria-label="Настройки приложения"
+              aria-label={t("Настройки приложения")}
               onClick={() => setSettingsOpen(true)}
             >
               <Settings2 size={20} />
@@ -91,8 +107,9 @@ export default function App() {
         </header>
         {!controller.storageAvailable && (
           <div className="storage-warning" role="status">
-            Браузер не разрешает сохранить сессию. Не закрывайте вкладку во
-            время чаепития.
+            {t(
+              "Браузер не разрешает сохранить сессию. Не закрывайте вкладку во время чаепития.",
+            )}
           </div>
         )}
         <div id="main-content" tabIndex={-1}>
@@ -104,36 +121,58 @@ export default function App() {
         </div>
         <footer className="site-footer page-width">
           <span>
-            tick tea<span className="brand-dot">.</span>{" "}
-            <span className="footer-divider">/</span> Сделайте паузу. Заварите
-            чай.
+            tick tea<span className="brand-dot">.</span>
           </span>
-          <span>Никакой спешки. Только настоящий момент.</span>
+          <span>{t("автор — sskifskii")}</span>
         </footer>
         <div className="sr-only" role="status" aria-live="polite">
           {controller.session?.status === "completed"
-            ? `Пролив ${controller.session.infusion} завершён. Можно разливать чай.`
+            ? t("Пролив {infusion} завершён. Можно разливать чай.", {
+                infusion: controller.session.infusion,
+              })
             : ""}
         </div>
         {settingsOpen && (
           <Modal
-            title="Ваш тихий уголок"
+            title={t("Ваш тихий уголок")}
             onClose={() => setSettingsOpen(false)}
           >
             <p className="modal-description">
-              Немного настроек для вашего ритуала.
+              {t("Немного настроек для вашего ритуала.")}
             </p>
+            <div className="setting-row">
+              <Languages size={21} />
+              <label className="language-label" htmlFor="app-language">
+                {t("Язык")}
+              </label>
+              <select
+                id="app-language"
+                className="language-select"
+                aria-label={t("Язык приложения")}
+                value={language}
+                onChange={(event) =>
+                  setLanguage(event.target.value === "en" ? "en" : "ru")
+                }
+              >
+                <option value="ru" lang="ru">
+                  Русский
+                </option>
+                <option value="en" lang="en">
+                  English
+                </option>
+              </select>
+            </div>
             <div className="setting-row">
               <Volume2 size={21} />
               <div>
-                <strong>Мягкий звук</strong>
-                <small>Колокольчик в конце пролива</small>
+                <strong>{t("Мягкий звук")}</strong>
+                <small>{t("Колокольчик в конце пролива")}</small>
               </div>
               <button
                 className="switch"
                 role="switch"
                 aria-checked={controller.settings.sound}
-                aria-label="Звук завершения"
+                aria-label={t("Звук завершения")}
                 onClick={() => {
                   unlockAudio();
                   controller.setSettings({
@@ -148,18 +187,18 @@ export default function App() {
             <div className="setting-row">
               <Vibrate size={21} />
               <div>
-                <strong>Вибрация</strong>
+                <strong>{t("Вибрация")}</strong>
                 <small>
                   {"vibrate" in navigator
-                    ? "Тихое напоминание в ладони"
-                    : "Недоступна в этом браузере"}
+                    ? t("Тихое напоминание в ладони")
+                    : t("Недоступна в этом браузере")}
                 </small>
               </div>
               <button
                 className="switch"
                 role="switch"
                 aria-checked={controller.settings.vibration}
-                aria-label="Вибрация завершения"
+                aria-label={t("Вибрация завершения")}
                 disabled={!("vibrate" in navigator)}
                 onClick={() =>
                   controller.setSettings({
@@ -172,20 +211,23 @@ export default function App() {
               </button>
             </div>
             <p className="settings-note">
-              В свёрнутой вкладке браузер может задержать сигнал. При
-              возвращении время и состояние пролива восстановятся.
+              {t(
+                "В свёрнутой вкладке браузер может задержать сигнал. При возвращении время и состояние пролива восстановятся.",
+              )}
             </p>
             <div className="install-panel">
               <Smartphone size={25} />
               <h3>
                 {installed
-                  ? "Ваш ритуал всегда рядом"
-                  : "Место для чая на вашем экране"}
+                  ? t("Ваш ритуал всегда рядом")
+                  : t("Место для чая на вашем экране")}
               </h3>
               <p>
                 {installed
-                  ? "Приложение уже открыто в самостоятельном режиме."
-                  : "Установите tick tea и заваривайте без лишних вкладок. После первой загрузки приложение доступно без интернета."}
+                  ? t("Приложение уже открыто в самостоятельном режиме.")
+                  : t(
+                      "Установите tick tea и заваривайте без лишних вкладок. После первой загрузки приложение доступно без интернета.",
+                    )}
               </p>
               {install ? (
                 <button
@@ -195,21 +237,22 @@ export default function App() {
                       await install.prompt();
                       await install.userChoice;
                     } catch {
-                      // При отказе браузера остаётся инструкция ручной установки.
+                      // Keep manual installation instructions available if the browser rejects installation.
                     } finally {
                       setInstall(null);
                     }
                   }}
                 >
-                  Установить приложение <Download size={17} />
+                  {t("Установить приложение")} <Download size={17} />
                 </button>
               ) : (
                 !installed && (
                   <p className="install-instructions">
-                    На iPhone: Safari → «Поделиться» → «На экран Домой».
+                    {t("На iPhone: Safari → «Поделиться» → «На экран Домой».")}
                     <br />
-                    На Android и компьютере: меню браузера → «Установить
-                    приложение» или «Добавить на главный экран».
+                    {t(
+                      "На Android и компьютере: меню браузера → «Установить приложение» или «Добавить на главный экран».",
+                    )}
                   </p>
                 )
               )}

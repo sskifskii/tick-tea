@@ -23,7 +23,8 @@ body {
   min-width: 320px;
 }
 button,
-input {
+input,
+select {
   font: inherit;
 }
 button {
@@ -47,6 +48,24 @@ a:focus-visible,
 input:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 5px;
+}
+select:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 5px;
+}
+.language-label {
+  flex: 1;
+  font-size: 12px;
+}
+.language-select {
+  max-width: 60%;
+  min-height: 44px;
+  padding: 8px 12px;
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 12px;
 }
 button {
   touch-action: manipulation;
@@ -195,10 +214,6 @@ button {
 .site-footer > span:first-child {
   color: #a9ab9e;
 }
-.footer-divider {
-  padding: 0 13px;
-  color: #55584b;
-}
 .brew-heading {
   display: flex;
   align-items: center;
@@ -264,13 +279,24 @@ button {
   height: 100%;
   overflow: visible;
 }
-.progress-ring {
-  transition: stroke-dashoffset 0.12s linear;
+.ring-dot-orbit {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.timer--running .ring-dot-orbit {
+  will-change: transform;
 }
 .ring-dot {
-  transform-origin: 160px 160px;
-  transition: transform 0.12s linear;
-  filter: drop-shadow(0 0 4px #caa77b88);
+  position: absolute;
+  top: 5%;
+  left: 50%;
+  width: 2.5%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 4px #caa77b88;
+  transform: translate(-50%, -50%);
 }
 .timer-content {
   position: absolute;
@@ -856,9 +882,6 @@ button {
     padding-bottom: max(25px, env(safe-area-inset-bottom));
     font-size: 8px;
   }
-  .site-footer > span:last-child {
-    display: none;
-  }
 }
 @media (max-width: 480px) {
   .page-width {
@@ -1084,7 +1107,7 @@ h1:focus {
   outline: none;
 }
 
-/* Настройки текущего чаепития. */
+/* Current tea session settings. */
 .timer-parameters {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -1125,7 +1148,7 @@ h1:focus {
 .brew-sidebar {
   display: block;
 }
-/* Общая карточка: крупный циферблат и отдельная колонка управления. */
+/* Shared card: a large timer display and a separate controls column. */
 .timer-stage,
 .brew-panel {
   display: contents;

@@ -1,3 +1,4 @@
+import { useLanguage } from "../hooks/useLanguage";
 import { useEffect, useRef, useState } from "react";
 import {
   ArrowRight,
@@ -26,6 +27,7 @@ export function Brewing({
   dispatch: (action: SessionAction) => void;
   onEnd: () => void;
 }) {
+  const { t } = useLanguage();
   const heading = useRef<HTMLHeadingElement>(null);
   const durationInput = useRef<HTMLInputElement>(null);
   const reducedMotion = useReducedMotion();
@@ -39,10 +41,10 @@ export function Brewing({
   const canEdit = session.status === "idle" || session.status === "paused";
   const completed = session.status === "completed";
   const labels = {
-    idle: "Начать пролив",
-    running: "Пауза",
-    paused: "Продолжить",
-    completed: "Следующий пролив",
+    idle: t("Начать пролив"),
+    running: t("Пауза"),
+    paused: t("Продолжить"),
+    completed: t("Следующий пролив"),
   };
   const primary = () => {
     unlockAudio();
@@ -68,17 +70,17 @@ export function Brewing({
       transition={{ duration: 0.3 }}
     >
       <h1 ref={heading} tabIndex={-1} className="sr-only">
-        Таймер заваривания
+        {t("Таймер заваривания")}
       </h1>
       <div className="brew-layout">
-        <section className="brew-main" aria-label="Таймер заваривания">
+        <section className="brew-main" aria-label={t("Таймер заваривания")}>
           <div className="timer-stage">
             <Timer session={session} />
             <div
               className={`quick-adjust ${canEdit ? "" : "quick-adjust--locked"}`}
             >
               <button
-                aria-label="Уменьшить время на 5 секунд"
+                aria-label={t("Уменьшить время на 5 секунд")}
                 disabled={!canEdit || session.duration === MIN_SECONDS}
                 onClick={() =>
                   dispatch({
@@ -87,7 +89,7 @@ export function Brewing({
                   })
                 }
               >
-                <Minus size={15} />5 с
+                <Minus size={15} />5 {t("с")}
               </button>
               <button
                 className="time-edit"
@@ -97,10 +99,10 @@ export function Brewing({
                   setDialog("time");
                 }}
               >
-                <SlidersHorizontal size={15} /> Изменить время
+                <SlidersHorizontal size={15} /> {t("Изменить время")}
               </button>
               <button
-                aria-label="Увеличить время на 5 секунд"
+                aria-label={t("Увеличить время на 5 секунд")}
                 disabled={!canEdit || session.duration === MAX_SECONDS}
                 onClick={() =>
                   dispatch({
@@ -109,7 +111,7 @@ export function Brewing({
                   })
                 }
               >
-                <Plus size={15} />5 с
+                <Plus size={15} />5 {t("с")}
               </button>
             </div>
           </div>
@@ -124,12 +126,12 @@ export function Brewing({
               >
                 <span>
                   {session.infusion === 1
-                    ? "Стартовое время"
-                    : "Текущий пролив"}
+                    ? t("Стартовое время")
+                    : t("Текущий пролив")}
                 </span>
                 <strong>
                   {session.duration}
-                  <small> с</small>
+                  <small> {t("с")}</small>
                 </strong>
               </button>
               <button
@@ -138,10 +140,10 @@ export function Brewing({
                   setDialog("increment");
                 }}
               >
-                <span>Прибавлять к проливу</span>
+                <span>{t("Прибавлять к проливу")}</span>
                 <strong>
                   +{session.increment}
-                  <small> с</small>
+                  <small> {t("с")}</small>
                 </strong>
               </button>
             </div>
@@ -162,12 +164,20 @@ export function Brewing({
               </motion.button>
               <div className="under-button" aria-live="polite">
                 {completed
-                  ? `Следующий — ${nextDuration(session.duration, session.increment)} с. Начните, когда будете готовы.`
+                  ? t(
+                      "Следующий — {seconds} с. Начните, когда будете готовы.",
+                      {
+                        seconds: nextDuration(
+                          session.duration,
+                          session.increment,
+                        ),
+                      },
+                    )
                   : session.status === "running"
-                    ? "Вдохните. Всё идёт своим чередом."
+                    ? t("Вдохните. Всё идёт своим чередом.")
                     : session.status === "paused"
-                      ? "Продолжите или начните этот пролив заново."
-                      : "Залейте воду и нажмите, чтобы начать."}
+                      ? t("Продолжите или начните этот пролив заново.")
+                      : t("Залейте воду и нажмите, чтобы начать.")}
               </div>
               <div className="secondary-controls">
                 <button
@@ -178,25 +188,25 @@ export function Brewing({
                       : setDialog("restart")
                   }
                 >
-                  <RotateCcw size={15} /> Заново
+                  <RotateCcw size={15} /> {t("Заново")}
                 </button>
                 <span />
                 <button onClick={() => setDialog("end")}>
-                  <X size={15} /> Завершить чаепитие
+                  <X size={15} /> {t("Завершить чаепитие")}
                 </button>
               </div>
             </div>
 
             <section className="history" aria-labelledby="history-title">
               <div className="history-heading">
-                <h2 id="history-title">История проливов</h2>
+                <h2 id="history-title">{t("История проливов")}</h2>
                 <span>{String(session.history.length).padStart(2, "0")}</span>
               </div>
               {session.history.length === 0 ? (
                 <p className="history-empty">
-                  Первый глоток ещё впереди.
+                  {t("Первый глоток ещё впереди.")}
                   <br />
-                  Здесь появится история вашего чаепития.
+                  {t("Здесь появится история вашего чаепития.")}
                 </p>
               ) : (
                 <motion.ol layoutScroll>
@@ -212,19 +222,19 @@ export function Brewing({
                       }}
                     >
                       <span>
-                        <Check size={14} /> Пролив{" "}
+                        <Check size={14} /> {t("Пролив")}{" "}
                         {String(item.number).padStart(2, "0")}
                       </span>
                       <strong>
-                        {item.duration} <small>с</small>
+                        {item.duration} <small>{t("с")}</small>
                       </strong>
                     </motion.li>
                   ))}
                 </motion.ol>
               )}
               <div className="history-foot">
-                <span className="status-dot" /> Сохраняется в этой вкладке до её
-                закрытия
+                <span className="status-dot" />{" "}
+                {t("Сохраняется в этой вкладке до её закрытия")}
               </div>
             </section>
           </div>
@@ -235,17 +245,24 @@ export function Brewing({
           initialFocusRef={durationInput}
           title={
             dialog === "increment"
-              ? "Шаг между проливами"
-              : "Время вашего пролива"
+              ? t("Шаг между проливами")
+              : t("Время вашего пролива")
           }
           onClose={() => setDialog(null)}
         >
           <p className="modal-description">
             {dialog === "increment"
-              ? "Этот шаг автоматически прибавляется к времени предыдущего пролива. Укажите 0 для одинаковой длительности."
+              ? t(
+                  "Этот шаг автоматически прибавляется к времени предыдущего пролива. Укажите 0 для одинаковой длительности.",
+                )
               : session.status === "paused"
-                ? "Отсчёт начнётся заново с выбранного времени. История предыдущих проливов сохранится."
-                : `Следующий пролив будет на ${session.increment} с дольше выбранного времени.`}
+                ? t(
+                    "Отсчёт начнётся заново с выбранного времени. История предыдущих проливов сохранится.",
+                  )
+                : t(
+                    "Следующий пролив будет на {seconds} с дольше выбранного времени.",
+                    { seconds: session.increment },
+                  )}
           </p>
           <form
             onSubmit={(event) => {
@@ -262,8 +279,8 @@ export function Brewing({
           >
             <label className="duration-label" htmlFor="exact-duration">
               {dialog === "increment"
-                ? "Прибавка в секундах"
-                : "Длительность в секундах"}
+                ? t("Прибавка в секундах")
+                : t("Длительность в секундах")}
             </label>
             <div className="duration-input">
               <input
@@ -275,19 +292,24 @@ export function Brewing({
                 step="1"
                 inputMode="numeric"
                 value={precise}
+                onFocus={(event) => event.currentTarget.select()}
                 onChange={(event) => setPrecise(event.target.value)}
               />
-              <span>секунд</span>
+              <span>{t("секунд")}</span>
             </div>
             <p className="input-hint">
-              От {dialog === "increment" ? 0 : 1} до 3 599 секунд (59:59)
+              {t("От {min} до 3 599 секунд (59:59)", {
+                min: dialog === "increment" ? 0 : 1,
+              })}
             </p>
             <button
               className="primary-button"
               type="submit"
               disabled={!exactValid}
             >
-              {dialog === "increment" ? "Сохранить шаг" : "Сохранить время"}{" "}
+              {dialog === "increment"
+                ? t("Сохранить шаг")
+                : t("Сохранить время")}{" "}
               <Check size={18} />
             </button>
           </form>
@@ -295,26 +317,29 @@ export function Brewing({
       )}
       {dialog === "restart" && (
         <Modal
-          title="Начать этот пролив заново?"
+          title={t("Начать этот пролив заново?")}
           onClose={() => setDialog(null)}
         >
           <p className="modal-description">
-            Текущий отсчёт сбросится до {session.duration} с. Перед запуском
-            можно будет изменить время.
+            {t(
+              "Текущий отсчёт сбросится до {seconds} с. Перед запуском можно будет изменить время.",
+              { seconds: session.duration },
+            )}
           </p>
           <button className="primary-button" onClick={restart}>
-            <RotateCcw size={18} /> Начать заново
+            <RotateCcw size={18} /> {t("Начать заново")}
           </button>
           <button className="modal-cancel" onClick={() => setDialog(null)}>
-            Оставить как есть
+            {t("Оставить как есть")}
           </button>
         </Modal>
       )}
       {dialog === "end" && (
-        <Modal title="Завершить чаепитие?" onClose={() => setDialog(null)}>
+        <Modal title={t("Завершить чаепитие?")} onClose={() => setDialog(null)}>
           <p className="modal-description">
-            Текущая сессия и история проливов будут сброшены. Новый ритуал
-            начнётся с чистого листа.
+            {t(
+              "Текущая сессия и история проливов будут сброшены. Новый ритуал начнётся с чистого листа.",
+            )}
           </p>
           <button
             className="primary-button"
@@ -323,10 +348,10 @@ export function Brewing({
               onEnd();
             }}
           >
-            Начать новое чаепитие <ArrowRight size={18} />
+            {t("Начать новое чаепитие")} <ArrowRight size={18} />
           </button>
           <button className="modal-cancel" onClick={() => setDialog(null)}>
-            Остаться с чаем
+            {t("Остаться с чаем")}
           </button>
         </Modal>
       )}
